@@ -7,6 +7,7 @@ public sealed class OrderDbContext(
     DbContextOptions<OrderDbContext> options)
     : DbContext(options)
 {
+    public const string ConnectionDatabase = "Orders";
     public DbSet<Order> Orders => Set<Order>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
