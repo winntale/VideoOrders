@@ -110,6 +110,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{7352
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoOrdersPortal", "VideoOrdersPortal\VideoOrdersPortal.csproj", "{54B9D632-26AC-4DA1-8CD9-02B764ECFE76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationClient.Abstractions", "OrderService\Abstractions\NotificationClient.Abstractions\NotificationClient.Abstractions.csproj", "{ADE01204-2DFA-4D00-A85A-2C1F001A1EC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoArchiveClient.Abstractions", "OrderService\Abstractions\VideoArchiveClient.Abstractions\VideoArchiveClient.Abstractions.csproj", "{5A1772F4-49FC-4F64-83A6-0B6B8B9BE91A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationClient.Adapter", "OrderService\NotificationClient.Adapter\NotificationClient.Adapter.csproj", "{2D94686A-75BE-4021-AEC5-3562311468AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoArchiveClient.Adapter", "OrderService\VideoArchiveClient.Adapter\VideoArchiveClient.Adapter.csproj", "{59B75DE5-5D2F-4113-90F0-7CB443717D8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -240,6 +248,22 @@ Global
 		{54B9D632-26AC-4DA1-8CD9-02B764ECFE76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54B9D632-26AC-4DA1-8CD9-02B764ECFE76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54B9D632-26AC-4DA1-8CD9-02B764ECFE76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADE01204-2DFA-4D00-A85A-2C1F001A1EC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADE01204-2DFA-4D00-A85A-2C1F001A1EC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADE01204-2DFA-4D00-A85A-2C1F001A1EC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADE01204-2DFA-4D00-A85A-2C1F001A1EC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A1772F4-49FC-4F64-83A6-0B6B8B9BE91A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A1772F4-49FC-4F64-83A6-0B6B8B9BE91A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A1772F4-49FC-4F64-83A6-0B6B8B9BE91A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A1772F4-49FC-4F64-83A6-0B6B8B9BE91A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D94686A-75BE-4021-AEC5-3562311468AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D94686A-75BE-4021-AEC5-3562311468AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D94686A-75BE-4021-AEC5-3562311468AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D94686A-75BE-4021-AEC5-3562311468AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59B75DE5-5D2F-4113-90F0-7CB443717D8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59B75DE5-5D2F-4113-90F0-7CB443717D8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59B75DE5-5D2F-4113-90F0-7CB443717D8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59B75DE5-5D2F-4113-90F0-7CB443717D8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BD98D8BD-6615-4D76-A190-5AD3A003B026} = {1653EA1B-8721-448A-B30E-1368F9E22CBA}
@@ -290,5 +314,9 @@ Global
 		{D1B2DC76-319B-46AF-97A8-C4D0C88D93D0} = {9B7C1D8E-F59E-480C-BC7F-E7FD657DA357}
 		{04C902EC-4CCA-4376-9489-E10DB8566157} = {801C70EE-2F85-40D6-832A-98E0F6447E16}
 		{73521456-3636-4DBF-95A3-8842B20B08A4} = {9FE368B0-E7B4-4000-9820-FFE6B23A8AED}
+		{ADE01204-2DFA-4D00-A85A-2C1F001A1EC7} = {BD98D8BD-6615-4D76-A190-5AD3A003B026}
+		{5A1772F4-49FC-4F64-83A6-0B6B8B9BE91A} = {BD98D8BD-6615-4D76-A190-5AD3A003B026}
+		{2D94686A-75BE-4021-AEC5-3562311468AA} = {DF023F2A-BA83-40A7-833B-FA6F8866D91F}
+		{59B75DE5-5D2F-4113-90F0-7CB443717D8D} = {DF023F2A-BA83-40A7-833B-FA6F8866D91F}
 	EndGlobalSection
 EndGlobal

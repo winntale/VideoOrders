@@ -11,4 +11,8 @@
       <ProjectReference Include="..\..\Abstractions\Dal.Abstractions\Dal.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="16.1.0" />
+    </ItemGroup>
+
 </Project>

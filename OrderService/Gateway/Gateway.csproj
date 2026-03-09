@@ -27,4 +27,8 @@
       <ProjectReference Include="..\Implementations\Dal\Dal.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="16.1.0" />
+    </ItemGroup>
+
 </Project>
