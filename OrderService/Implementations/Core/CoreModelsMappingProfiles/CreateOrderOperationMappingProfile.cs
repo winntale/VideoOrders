@@ -10,6 +10,9 @@ internal sealed class CreateOrderOperationMappingProfile : Profile
     public CreateOrderOperationMappingProfile()
     {
         CreateMap<CreateOrderOperationModel, Order>()
+            .ForMember(d => d.Id,
+                opt => opt.MapFrom((_, _, _, ctx) =>
+                    (Guid)ctx.Items["Id"]))
             .ForMember(d => d.Status,
                 opt => opt.MapFrom((_, _, _, ctx) =>
                     (OrderStatus)ctx.Items["Status"]))

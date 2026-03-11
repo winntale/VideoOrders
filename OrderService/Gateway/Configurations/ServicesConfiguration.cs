@@ -1,6 +1,7 @@
 using AutoMapper;
+using Gateway.GatewayModelsMappingProfiles;
 
-namespace Gateway;
+namespace Gateway.Configurations;
 
 public static class ServicesConfiguration
 {
@@ -11,6 +12,6 @@ public static class ServicesConfiguration
     
     public static void ConfigureGatewayProfiles(this IMapperConfigurationExpression mc)
     {
-        throw new NotImplementedException();
+        mc.AddMaps(typeof(OrderMappingProfile).Assembly);
     }
 }

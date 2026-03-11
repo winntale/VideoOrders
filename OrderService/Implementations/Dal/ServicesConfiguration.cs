@@ -24,7 +24,6 @@ public static class ServicesConfiguration
 
     public static void ConfigureDalProfiles(this IMapperConfigurationExpression mc)
     {
-        throw new NotImplementedException();
         //mc.AddMaps();
     }
 }

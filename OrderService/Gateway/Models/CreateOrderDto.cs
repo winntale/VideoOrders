@@ -1,6 +1,6 @@
-namespace Core.Abstractions.OperationModels;
+namespace Gateway.Models;
 
-public sealed record CreateOrderOperationModel
+public sealed record CreateOrderDto
 {
     public required Guid UserId { get; init; }
     public required Guid CameraId { get; init; }

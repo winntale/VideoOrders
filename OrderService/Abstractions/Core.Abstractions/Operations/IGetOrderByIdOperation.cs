@@ -4,7 +4,7 @@ namespace Core.Abstractions.Operations;
 
 public interface IGetOrderByIdOperation
 {
-    Task<Result<OrderDetailsOperationModel>> GetOrderByIdAsync(
+    Task<Result<OrderDetailsOperationModel>> ExecuteAsync(
         GetOrderByIdOperationModel operationModel,
         CancellationToken cancellationToken);
 }

@@ -12,7 +12,7 @@ internal sealed class GetOrderByIdOperation(
     IOrderRepository repository,
     IMapper mapper) : IGetOrderByIdOperation
 {
-    public async Task<Result<OrderDetailsOperationModel>> GetOrderByIdAsync(
+    public async Task<Result<OrderDetailsOperationModel>> ExecuteAsync(
         GetOrderByIdOperationModel operationModel,
         CancellationToken cancellationToken)
     {

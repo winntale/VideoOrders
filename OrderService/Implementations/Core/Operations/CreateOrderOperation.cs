@@ -21,6 +21,7 @@ internal sealed class CreateOrderOperation(
     {
         var order = mapper.Map<Order>(operationModel, opts =>
         {
+            opts.Items["Id"] = Guid.NewGuid();
             opts.Items["Status"] = OrderStatus.Created;
             opts.Items["FailureReason"] = null;
             opts.Items["CreatedAtUtc"] = DateTimeOffset.UtcNow;
