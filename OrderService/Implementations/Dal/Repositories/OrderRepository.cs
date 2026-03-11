@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dal.Repositories;
 
-public class OrderRepository(OrderDbContext dbContext)
+internal sealed class OrderRepository(OrderDbContext dbContext)
     : IOrderRepository
 {
     public async Task AddAsync(Order order, CancellationToken cancellationToken)
