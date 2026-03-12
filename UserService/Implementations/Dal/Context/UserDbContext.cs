@@ -9,6 +9,8 @@ public sealed class UserDbContext : DbContext
         : base(options)
     {
     }
+    
+    public const string ConnectionDatabase = "Users";
 
     public DbSet<User> Users => Set<User>();
 

@@ -1,10 +1,13 @@
 using Core;
 using Dal;
 using Gateway.Configurations;
+using UserServiceClient.Adapter;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddUserServiceClients(builder.Configuration);
 
 builder.Services.ConfigureCoreServices();
 

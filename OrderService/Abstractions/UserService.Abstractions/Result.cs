@@ -1,4 +1,4 @@
-namespace Core.Abstractions;
+namespace UserService.Abstractions;
 
 public record Result
 {
