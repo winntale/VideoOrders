@@ -7,5 +7,6 @@ public enum OrderStatus
     ValidationFailed = 2,
     Processing = 3,
     Completed = 4,
-    Failed = 5
+    Failed = 5,
+    Delivered = 6
 }

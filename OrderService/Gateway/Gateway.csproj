@@ -26,10 +26,15 @@
       <ProjectReference Include="..\Implementations\Core\Core.csproj" />
       <ProjectReference Include="..\Implementations\Dal\Dal.csproj" />
       <ProjectReference Include="..\UserServiceClient.Adapter\UserServiceClient.Adapter.csproj" />
+      <ProjectReference Include="..\VideoArchiveClient.Adapter\VideoArchiveClient.Adapter.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="16.1.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.5" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.5" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.5" />

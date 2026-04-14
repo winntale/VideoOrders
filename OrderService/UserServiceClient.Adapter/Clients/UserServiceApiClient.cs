@@ -1,9 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
-using UserService.Abstractions.Clients;
-using UserService.Abstractions.Models;
-using UserService.Abstractions.Options;
+using UserServiceClient.Abstractions;
+using UserServiceClient.Abstractions.Clients;
+using UserServiceClient.Abstractions.Models;
+using UserServiceClient.Abstractions.Options;
 
 namespace UserServiceClient.Adapter.Clients;
 
@@ -12,40 +13,30 @@ internal sealed class UserServiceApiClient(
     IOptions<UserServiceClientOptions> options)
     : IUserServiceApiClient
 {
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient(UserServiceClientOptions.HttpClientName); 
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient(nameof(UserServiceApiClient)); 
     private readonly string _baseUrl = options.Value.BaseUrl;
     
-    public async Task<ValidateAccessResultClientModel?> ValidateUserAccessAsync(
+    public async Task<Result<ValidateAccessResultClientModel?>> ValidateUserAccessAsync(
         ValidateAccessClientModel model,
         CancellationToken cancellationToken)
     {
         
         using var response = await _httpClient.PostAsJsonAsync(
-            $"{_baseUrl.TrimEnd('/')}/api/users/access",
+            $"{_baseUrl.TrimEnd('/')}/UserAccess/Validate",
             model,
             cancellationToken);
     
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            return new ValidateAccessResultClientModel
-            {
-                UserId = model.UserId,
-                CameraId = model.CameraId,
-                IsAllowed = false,
-                DenyReason = $"User with id '{model.UserId}' was not found.",
-                UserNotFound = true
-            };
+            return Error.NotFound($"User with id '{model.UserId}' was not found.");
         }
 
         if (!response.IsSuccessStatusCode)
         {
             return new ValidateAccessResultClientModel
             {
-                UserId = model.UserId,
-                CameraId = model.CameraId,
                 IsAllowed = false,
-                DenyReason = $"UserService returned status code {(int)response.StatusCode}.",
-                UserNotFound = false
+                DenyReason = $"UserService returned status code {(int)response.StatusCode}."
             };
         }
 

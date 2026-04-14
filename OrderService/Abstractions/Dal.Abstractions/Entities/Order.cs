@@ -6,11 +6,11 @@ public sealed record Order
 {
     public Guid Id { get; init; }
     public Guid UserId { get; init; }
-    public Guid CameraId { get; set; }
-    public DateTimeOffset FromUtc { get; set; }
-    public DateTimeOffset ToUtc { get; set; }
-    public OrderStatus Status { get; set; }
-    public string? FailureReason { get; set; }
-    public DateTimeOffset CreatedAtUtc { get; set; }
-    public DateTimeOffset? UpdatedAtUtc { get; set; }
+    public Guid CameraId { get; init; }
+    public DateTimeOffset FromUtc { get; init; }
+    public DateTimeOffset ToUtc { get; init; }
+    public OrderStatus Status { get; init; }
+    public string? FailureReason { get; init; }
+    public DateTimeOffset CreatedAtUtc { get; init; }
+    public DateTimeOffset? UpdatedAtUtc { get; init; }
 }

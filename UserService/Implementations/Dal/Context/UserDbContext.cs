@@ -20,6 +20,8 @@ public sealed class UserDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
+        modelBuilder.HasDefaultSchema("user_access");
+        
         var user = modelBuilder.Entity<User>();
         user.HasKey(x => x.Id);
         user.Property(x => x.Login).IsRequired().HasMaxLength(128);

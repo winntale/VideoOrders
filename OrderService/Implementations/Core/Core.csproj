@@ -9,7 +9,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\Core.Abstractions\Core.Abstractions.csproj" />
       <ProjectReference Include="..\..\Abstractions\Dal.Abstractions\Dal.Abstractions.csproj" />
-      <ProjectReference Include="..\..\Abstractions\UserService.Abstractions\UserService.Abstractions.csproj" />
+      <ProjectReference Include="..\..\Abstractions\UserServiceClient.Abstractions\UserServiceClient.Abstractions.csproj" />
+      <ProjectReference Include="..\..\Abstractions\VideoArchiveClient.Abstractions\VideoArchiveClient.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

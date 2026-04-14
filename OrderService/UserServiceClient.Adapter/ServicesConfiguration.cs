@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using UserService.Abstractions.Clients;
-using UserService.Abstractions.Options;
+using UserServiceClient.Abstractions.Clients;
+using UserServiceClient.Abstractions.Enums;
+using UserServiceClient.Abstractions.Options;
 using UserServiceClient.Adapter.Clients;
 
 namespace UserServiceClient.Adapter;
@@ -15,9 +16,9 @@ public static class ServicesConfiguration
         services.Configure<UserServiceClientOptions>(
             configuration.GetSection("Services:UserService"));
 
-        services.AddHttpClient(UserServiceClientOptions.HttpClientName);
+        services.AddHttpClient(nameof(UserServiceApiClient));
 
-        services.AddScoped<IUserServiceApiClient, UserServiceApiClient>();
+        services.AddKeyedTransient<IUserServiceApiClient, UserServiceApiClient>(nameof(UserServiceEnum.UserServiceApiClientKey));
 
         return services;
     }

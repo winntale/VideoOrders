@@ -1,5 +1,6 @@
 using AutoMapper;
 using Dal.Abstractions.Common;
+using Dal.Abstractions.Enums;
 using Dal.Abstractions.Repositories;
 using Dal.Common;
 using Dal.Context;
@@ -15,7 +16,7 @@ public static class ServicesConfiguration
     public static void AddDbStorageContext(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<OrderDbContext>(options => options
-            .UseNpgsql(configuration.GetConnectionString(OrderDbContext.ConnectionDatabase))
+            .UseNpgsql(configuration.GetConnectionString(nameof(OrderDbContextEnum.Orders)))
         );
 
         services.AddScoped<IOrderRepository, OrderRepository>();

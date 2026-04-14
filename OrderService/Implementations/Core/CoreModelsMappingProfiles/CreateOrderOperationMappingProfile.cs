@@ -2,7 +2,8 @@ using AutoMapper;
 using Core.Abstractions.Enums;
 using Core.Abstractions.OperationModels;
 using Dal.Abstractions.Entities;
-using UserService.Abstractions.Models;
+using UserServiceClient.Abstractions.Models;
+using VideoArchiveClient.Abstractions.Models;
 
 namespace Core.CoreModelsMappingProfiles;
 
@@ -30,5 +31,7 @@ internal sealed class CreateOrderOperationMappingProfile : Profile
         CreateMap<Order, OrderDetailsOperationModel>();
 
         CreateMap<CreateOrderOperationModel, ValidateAccessClientModel>();
+
+        CreateMap<CreateOrderOperationModel, ValidateArchiveAvailabilityClientModel>();
     }
 }

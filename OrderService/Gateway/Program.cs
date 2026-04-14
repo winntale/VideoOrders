@@ -2,12 +2,16 @@ using Core;
 using Dal;
 using Gateway.Configurations;
 using UserServiceClient.Adapter;
+using VideoArchiveClient.Adapter;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddUserServiceClients(builder.Configuration);
+builder.Services
+    .AddUserServiceClients(builder.Configuration);
+builder.Services
+    .AddVideoServiceClients(builder.Configuration);
 
 builder.Services.ConfigureCoreServices();
 

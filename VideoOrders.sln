@@ -118,7 +118,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationClient.Adapter"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoArchiveClient.Adapter", "OrderService\VideoArchiveClient.Adapter\VideoArchiveClient.Adapter.csproj", "{59B75DE5-5D2F-4113-90F0-7CB443717D8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Abstractions", "OrderService\Abstractions\UserService.Abstractions\UserService.Abstractions.csproj", "{6BCE2599-6F7D-47EB-AFB8-45A27A596EE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserServiceClient.Abstractions", "OrderService\Abstractions\UserServiceClient.Abstractions\UserServiceClient.Abstractions.csproj", "{6BCE2599-6F7D-47EB-AFB8-45A27A596EE9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserServiceClient.Adapter", "OrderService\UserServiceClient.Adapter\UserServiceClient.Adapter.csproj", "{5327A99B-459B-49FD-A534-6D39337933AC}"
 EndProject

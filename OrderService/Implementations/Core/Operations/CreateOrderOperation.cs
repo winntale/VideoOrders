@@ -6,15 +6,20 @@ using Core.Abstractions.Operations;
 using Dal.Abstractions.Repositories;
 using Dal.Abstractions.Common;
 using Dal.Abstractions.Entities;
-using UserService.Abstractions.Models;
-using UserService.Abstractions.Clients;
+using Microsoft.Extensions.DependencyInjection;
+using UserServiceClient.Abstractions.Models;
+using UserServiceClient.Abstractions.Clients;
+using UserServiceClient.Abstractions.Enums;
+using VideoArchiveClient.Abstractions.Clients;
+using VideoArchiveClient.Abstractions.Enums;
+using VideoArchiveClient.Abstractions.Models;
 
 namespace Core.Operations;
 
 internal sealed class CreateOrderOperation(
     IOrderRepository repository,
     IUnitOfWork unitOfWork,
-    IUserServiceApiClient userServiceApiClient,
+    IServiceProvider services,
     IMapper mapper)
     : ICreateOrderOperation
 {
@@ -22,30 +27,69 @@ internal sealed class CreateOrderOperation(
         CreateOrderOperationModel operationModel,
         CancellationToken cancellationToken)
     {
+        var videoArchiveServiceApiClient =
+            services.GetRequiredKeyedService<IVideoArchiveServiceApiClient>(nameof(VideoArchiveServiceEnum
+                .VideoArchiveServiceApiClientKey));
 
-        var clientModel = mapper.Map<ValidateAccessClientModel>(operationModel);
-        var callResult = await userServiceApiClient.ValidateUserAccessAsync(
-            clientModel,
+        var videoArchiveServiceClientModel = mapper.Map<ValidateArchiveAvailabilityClientModel>(operationModel);
+        var videoArchiveServiceClientResult =
+            await videoArchiveServiceApiClient.ValidateArchiveAvailabilityAsync(
+                videoArchiveServiceClientModel,
+                cancellationToken);
+
+        if (videoArchiveServiceClientResult.IsFailure)
+        {
+            return videoArchiveServiceClientResult.Error.Type switch
+            {
+                VideoArchiveClient.Abstractions.ErrorType.NotFound =>
+                    Error.NotFound(videoArchiveServiceClientResult.Error.Message),
+                _ => Error.Failure(videoArchiveServiceClientResult.Error.Message)
+            };
+        }
+        
+        if (videoArchiveServiceClientResult.Value is null)
+        {
+            return Error.Failure(videoArchiveServiceClientResult.Error.Message);
+        }
+        
+        var userServiceApiClient =
+            services.GetRequiredKeyedService<IUserServiceApiClient>(nameof(UserServiceEnum.UserServiceApiClientKey));
+
+        var userServiceClientModel = mapper.Map<ValidateAccessClientModel>(operationModel);
+        var userServiceCallResult = await userServiceApiClient.ValidateUserAccessAsync(
+            userServiceClientModel,
             cancellationToken);
 
-        if (callResult is null)
+        if (userServiceCallResult.IsFailure)
         {
-            return Error.Failure("Unable to validate user access due to UserService error.");
-        }
-        
-        if (callResult.UserNotFound)
-        {
-            return Error.NotFound(
-                callResult.DenyReason ??
-                $"User with id '{operationModel.UserId}' was not found.");
+            return userServiceCallResult.Error.Type switch
+            {
+                UserServiceClient.Abstractions.ErrorType.NotFound =>
+                    Error.NotFound(userServiceCallResult.Error.Message),
+                _ => Error.Failure(userServiceCallResult.Error.Message)
+            };
         }
 
-        if (!callResult.IsAllowed)
+        if (userServiceCallResult.Value is null)
+        {
+            return Error.Failure(userServiceCallResult.Error.Message);
+        }
+
+        if (!userServiceCallResult.Value.IsAllowed)
         {
             return Error.Forbidden(
-                callResult.DenyReason ?? "User has no access to this camera.");
+                userServiceCallResult.Value.DenyReason ??
+                userServiceCallResult.Error.Message);
         }
         
+        if (!videoArchiveServiceClientResult.Value.IsAvailable)
+        {
+            return Error.Forbidden(
+                videoArchiveServiceClientResult.Value.DenyReason ??
+                videoArchiveServiceClientResult.Error.Message);
+        }
+
+
         var order = mapper.Map<Order>(operationModel, opts =>
         {
             opts.Items["Id"] = Guid.NewGuid();
@@ -54,7 +98,7 @@ internal sealed class CreateOrderOperation(
             opts.Items["CreatedAtUtc"] = DateTimeOffset.UtcNow;
             opts.Items["UpdatedAtUtc"] = DateTimeOffset.UtcNow;
         });
-        
+
         await repository.AddAsync(order, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

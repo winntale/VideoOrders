@@ -7,13 +7,14 @@ public sealed class OrderDbContext(
     DbContextOptions<OrderDbContext> options)
     : DbContext(options)
 {
-    public const string ConnectionDatabase = "Orders";
     public DbSet<Order> Orders => Set<Order>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasDefaultSchema("order");
+        
         var order = modelBuilder.Entity<Order>();
 
         order.HasKey(x => x.Id);
@@ -35,9 +36,8 @@ public sealed class OrderDbContext(
         
         order.Property(x => x.Status)
             .IsRequired();
-        
-        order.Property(x => x.FailureReason)
-            .IsRequired();
+
+        order.Property(x => x.FailureReason);
         
         order.Property(x => x.CreatedAtUtc)
             .IsRequired();

@@ -26,10 +26,13 @@ internal sealed class ChangeOrderStatusOperation(
             return Error.NotFound($"Order with id '{repositoryModel.Id}' was not found.");
         }
 
-        order.Status = (OrderStatus)operationModel.Status;
-        order.UpdatedAtUtc = DateTimeOffset.UtcNow;
+        var updatedOrder = order with
+        {
+            Status = (OrderStatus)operationModel.Status,
+            UpdatedAtUtc = DateTimeOffset.UtcNow,
+        };
 
-        await repository.UpdateAsync(order, cancellationToken);
+        await repository.UpdateAsync(updatedOrder, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         var model = mapper.Map<OrderDetailsOperationModel>(order);

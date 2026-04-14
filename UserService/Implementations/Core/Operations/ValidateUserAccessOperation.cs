@@ -29,8 +29,6 @@ internal sealed class ValidateUserAccessOperation(
         {
             return new UserAccessValidationResultOperationModel
             {
-                UserId = operationModel.UserId,
-                CameraId = operationModel.CameraId,
                 IsAllowed = false,
                 DenyReason = "User is not active."
             };
@@ -43,8 +41,6 @@ internal sealed class ValidateUserAccessOperation(
 
         var resultModel = new UserAccessValidationResultOperationModel
         {
-            UserId = operationModel.UserId,
-            CameraId = operationModel.CameraId,
             IsAllowed = hasAccess,
             DenyReason = hasAccess ? null : "User has no access to this camera."
         };
