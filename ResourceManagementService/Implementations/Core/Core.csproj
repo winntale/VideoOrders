@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\Events.Abstractions\Events.Abstractions.csproj" />
       <ProjectReference Include="..\..\Abstractions\Core.Abstractions\Core.Abstractions.csproj" />
       <ProjectReference Include="..\..\Abstractions\Dal.Abstractions\Dal.Abstractions.csproj" />
     </ItemGroup>

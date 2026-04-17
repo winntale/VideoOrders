@@ -54,21 +54,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "VideoArchiveService
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal", "VideoArchiveService\Implementations\Dal\Dal.csproj", "{E05F05B5-BB65-4E10-97FE-B6FCF1732359}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceService", "ResourceService", "{9FE368B0-E7B4-4000-9820-FFE6B23A8AED}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagementService", "ResourceManagementService", "{9FE368B0-E7B4-4000-9820-FFE6B23A8AED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstractions", "{E5D514F1-0E85-4C64-BDB5-438F64A6861D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementations", "Implementations", "{59BA60BA-FDF3-4B1C-973C-FE82BB7A281D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "ResourceService\Gateway\Gateway.csproj", "{A8E3B7EF-AE02-4AE2-B466-CC52356E4C10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "ResourceManagementService\Gateway\Gateway.csproj", "{A8E3B7EF-AE02-4AE2-B466-CC52356E4C10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Abstractions", "ResourceService\Abstractions\Core.Abstractions\Core.Abstractions.csproj", "{D62EDE6A-3E86-48B5-8B3F-BB99AEF95746}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Abstractions", "ResourceManagementService\Abstractions\Core.Abstractions\Core.Abstractions.csproj", "{D62EDE6A-3E86-48B5-8B3F-BB99AEF95746}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal.Abstractions", "ResourceService\Abstractions\Dal.Abstractions\Dal.Abstractions.csproj", "{441995A8-0C8F-4D36-A429-90C20739662A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal.Abstractions", "ResourceManagementService\Abstractions\Dal.Abstractions\Dal.Abstractions.csproj", "{441995A8-0C8F-4D36-A429-90C20739662A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "ResourceService\Implementations\Core\Core.csproj", "{F93AE61F-1032-4590-80E0-6938FBED3DC3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "ResourceManagementService\Implementations\Core\Core.csproj", "{F93AE61F-1032-4590-80E0-6938FBED3DC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal", "ResourceService\Implementations\Dal\Dal.csproj", "{8D3CB913-4D92-4E67-A7DA-43DD76AD9449}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal", "ResourceManagementService\Implementations\Dal\Dal.csproj", "{8D3CB913-4D92-4E67-A7DA-43DD76AD9449}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotificationService", "NotificationService", "{801C70EE-2F85-40D6-832A-98E0F6447E16}"
 EndProject
@@ -121,6 +121,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserServiceClient.Abstractions", "OrderService\Abstractions\UserServiceClient.Abstractions\UserServiceClient.Abstractions.csproj", "{6BCE2599-6F7D-47EB-AFB8-45A27A596EE9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserServiceClient.Adapter", "OrderService\UserServiceClient.Adapter\UserServiceClient.Adapter.csproj", "{5327A99B-459B-49FD-A534-6D39337933AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{A44C5849-CFF9-48FF-91A9-BB7A54630929}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Abstractions", "BuildingBlocks\Events.Abstractions\Events.Abstractions.csproj", "{706300FC-EB41-48BA-BB02-B0F17014E6EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -276,6 +280,10 @@ Global
 		{5327A99B-459B-49FD-A534-6D39337933AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5327A99B-459B-49FD-A534-6D39337933AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5327A99B-459B-49FD-A534-6D39337933AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{706300FC-EB41-48BA-BB02-B0F17014E6EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{706300FC-EB41-48BA-BB02-B0F17014E6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{706300FC-EB41-48BA-BB02-B0F17014E6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{706300FC-EB41-48BA-BB02-B0F17014E6EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BD98D8BD-6615-4D76-A190-5AD3A003B026} = {1653EA1B-8721-448A-B30E-1368F9E22CBA}
@@ -332,5 +340,6 @@ Global
 		{59B75DE5-5D2F-4113-90F0-7CB443717D8D} = {DF023F2A-BA83-40A7-833B-FA6F8866D91F}
 		{6BCE2599-6F7D-47EB-AFB8-45A27A596EE9} = {BD98D8BD-6615-4D76-A190-5AD3A003B026}
 		{5327A99B-459B-49FD-A534-6D39337933AC} = {DF023F2A-BA83-40A7-833B-FA6F8866D91F}
+		{706300FC-EB41-48BA-BB02-B0F17014E6EA} = {A44C5849-CFF9-48FF-91A9-BB7A54630929}
 	EndGlobalSection
 EndGlobal

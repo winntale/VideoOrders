@@ -6,6 +6,8 @@ using Core.Abstractions.Operations;
 using Dal.Abstractions.Repositories;
 using Dal.Abstractions.Common;
 using Dal.Abstractions.Entities;
+using Events.Abstractions.Models;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using UserServiceClient.Abstractions.Models;
 using UserServiceClient.Abstractions.Clients;
@@ -20,7 +22,8 @@ internal sealed class CreateOrderOperation(
     IOrderRepository repository,
     IUnitOfWork unitOfWork,
     IServiceProvider services,
-    IMapper mapper)
+    IMapper mapper,
+    IPublishEndpoint publishEndpoint)
     : ICreateOrderOperation
 {
     public async Task<Result<OrderDetailsOperationModel>> ExecuteAsync(
@@ -102,6 +105,9 @@ internal sealed class CreateOrderOperation(
         await repository.AddAsync(order, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var orderCreatedEvent = mapper.Map<OrderCreatedEvent>(order);
+        await publishEndpoint.Publish(orderCreatedEvent, cancellationToken);
+        
         var resultModel = mapper.Map<OrderDetailsOperationModel>(order);
         return resultModel;
     }

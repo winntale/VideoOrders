@@ -2,6 +2,7 @@ using AutoMapper;
 using Core.Abstractions.Enums;
 using Core.Abstractions.OperationModels;
 using Dal.Abstractions.Entities;
+using Events.Abstractions.Models;
 using UserServiceClient.Abstractions.Models;
 using VideoArchiveClient.Abstractions.Models;
 
@@ -27,8 +28,11 @@ internal sealed class CreateOrderOperationMappingProfile : Profile
             .ForMember(d => d.UpdatedAtUtc,
                 opt => opt.MapFrom((_, _, _, ctx) =>
                     (DateTimeOffset)ctx.Items["UpdatedAtUtc"]));
-        
+
         CreateMap<Order, OrderDetailsOperationModel>();
+
+        CreateMap<Order, OrderCreatedEvent>()
+            .ForMember(d => d.OrderId, opt => opt.MapFrom(s => s.Id));
 
         CreateMap<CreateOrderOperationModel, ValidateAccessClientModel>();
 

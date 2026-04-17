@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\Events.Abstractions\Events.Abstractions.csproj" />
       <ProjectReference Include="..\..\Abstractions\Core.Abstractions\Core.Abstractions.csproj" />
       <ProjectReference Include="..\..\Abstractions\Dal.Abstractions\Dal.Abstractions.csproj" />
       <ProjectReference Include="..\..\Abstractions\UserServiceClient.Abstractions\UserServiceClient.Abstractions.csproj" />
@@ -15,6 +16,7 @@
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="16.1.0" />
+      <PackageReference Include="MassTransit.Abstractions" Version="8.5.9" />
     </ItemGroup>
 
 </Project>

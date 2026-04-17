@@ -21,6 +21,8 @@ builder.Services.ConfigureAutoMapper();
 
 builder.Services.ConfigureSwaggerServices();
 
+builder.Services.ConfigureMassTransit(builder.Configuration);
+
 var app = builder.Build();
 
 app.Services.ValidateMapperProfiles();
