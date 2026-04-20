@@ -1,3 +1,4 @@
+using Gateway.Consumers;
 using MassTransit;
 
 namespace Gateway.Configurations;
@@ -9,6 +10,12 @@ public static class MassTransitConfiguration
         services.AddMassTransit(x =>
         {
             x.SetKebabCaseEndpointNameFormatter();
+            
+            x.AddConsumer<OrderResourceReservedEventConsumer>();
+            x.AddConsumer<ResourceReservationFailedEventConsumer>();
+            x.AddConsumer<ProcessingStartedEventConsumer>();
+            x.AddConsumer<OrderCompletedEventConsumer>();
+            x.AddConsumer<OrderFailedEventConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {

@@ -1,3 +1,5 @@
+using VideoArchiveClient.Abstractions.Models;
+
 namespace VideoArchiveClient.Abstractions;
 
 public record Result
@@ -17,9 +19,7 @@ public record Result
     public Error Error { get; }
     public bool IsSuccess { get; }
     public bool IsFailure => !IsSuccess;
-
-    public static Result Success() => new(true, Error.None);
-
+    
     public static implicit operator Result(Error error) => new(false, error);
 }
 

@@ -21,18 +21,18 @@ namespace Core.Operations;
 internal sealed class CreateOrderOperation(
     IOrderRepository repository,
     IUnitOfWork unitOfWork,
-    IServiceProvider services,
     IMapper mapper,
-    IPublishEndpoint publishEndpoint)
+    IPublishEndpoint publishEndpoint,
+    [FromKeyedServices(nameof(VideoArchiveServiceEnum.VideoArchiveServiceApiClientKey))]
+    IVideoArchiveServiceApiClient videoArchiveServiceApiClient,
+    [FromKeyedServices(nameof(UserServiceEnum.UserServiceApiClientKey))]
+    IUserServiceApiClient userServiceApiClient)
     : ICreateOrderOperation
 {
     public async Task<Result<OrderDetailsOperationModel>> ExecuteAsync(
         CreateOrderOperationModel operationModel,
         CancellationToken cancellationToken)
     {
-        var videoArchiveServiceApiClient =
-            services.GetRequiredKeyedService<IVideoArchiveServiceApiClient>(nameof(VideoArchiveServiceEnum
-                .VideoArchiveServiceApiClientKey));
 
         var videoArchiveServiceClientModel = mapper.Map<ValidateArchiveAvailabilityClientModel>(operationModel);
         var videoArchiveServiceClientResult =
@@ -54,9 +54,6 @@ internal sealed class CreateOrderOperation(
         {
             return Error.Failure(videoArchiveServiceClientResult.Error.Message);
         }
-        
-        var userServiceApiClient =
-            services.GetRequiredKeyedService<IUserServiceApiClient>(nameof(UserServiceEnum.UserServiceApiClientKey));
 
         var userServiceClientModel = mapper.Map<ValidateAccessClientModel>(operationModel);
         var userServiceCallResult = await userServiceApiClient.ValidateUserAccessAsync(

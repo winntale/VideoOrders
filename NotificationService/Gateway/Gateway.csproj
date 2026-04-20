@@ -23,12 +23,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\BuildingBlocks\Events.Abstractions\Events.Abstractions.csproj" />
       <ProjectReference Include="..\Implementations\Core\Core.csproj" />
       <ProjectReference Include="..\Implementations\Dal\Dal.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="16.1.0" />
+      <PackageReference Include="MassTransit" Version="8.5.9" />
+      <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.9" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
