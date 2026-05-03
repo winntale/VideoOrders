@@ -1,4 +1,5 @@
 using Dal.Abstractions.Entities;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dal.Context;
@@ -14,6 +15,10 @@ public sealed class OrderDbContext(
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.HasDefaultSchema("order");
+        
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
         
         var order = modelBuilder.Entity<Order>();
 

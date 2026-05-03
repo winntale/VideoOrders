@@ -26,6 +26,16 @@ public static class MassTransitConfiguration
                     h.Username(username!);
                     h.Password(password!);
                 });
+                
+                cfg.UseMessageRetry(r => r.Intervals(
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(5)));
+
+                cfg.UseDelayedRedelivery(r => r.Intervals(
+                    TimeSpan.FromSeconds(10),
+                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromMinutes(1)));
 
                 cfg.ConfigureEndpoints(context);
             });

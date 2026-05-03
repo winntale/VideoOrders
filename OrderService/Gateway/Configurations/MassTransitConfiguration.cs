@@ -1,3 +1,4 @@
+using Dal.Context;
 using Gateway.Consumers;
 using MassTransit;
 
@@ -17,6 +18,14 @@ public static class MassTransitConfiguration
             x.AddConsumer<OrderCompletedEventConsumer>();
             x.AddConsumer<OrderFailedEventConsumer>();
 
+            x.AddEntityFrameworkOutbox<OrderDbContext>(o =>
+            {
+                o.UsePostgres();
+                o.UseBusOutbox();
+                o.DuplicateDetectionWindow = TimeSpan.FromMinutes(30);
+                o.QueryDelay = TimeSpan.FromSeconds(2);
+            });
+            
             x.UsingRabbitMq((context, cfg) =>
             {
                 var rabbitMqSection = configuration.GetSection("RabbitMq");
@@ -30,6 +39,16 @@ public static class MassTransitConfiguration
                     h.Username(username!);
                     h.Password(password!);
                 });
+                
+                cfg.UseMessageRetry(r => r.Intervals(
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(5)));
+
+                cfg.UseDelayedRedelivery(r => r.Intervals(
+                    TimeSpan.FromSeconds(10),
+                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromMinutes(1)));
 
                 cfg.ConfigureEndpoints(context);
             });
