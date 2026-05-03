@@ -7,12 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\Events.Abstractions\Events.Abstractions.csproj" />
       <ProjectReference Include="..\..\Abstractions\Dal.Abstractions\Dal.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="16.1.0" />
+      <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.19.20" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.6" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     </ItemGroup>
 

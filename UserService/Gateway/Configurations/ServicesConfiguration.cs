@@ -11,6 +11,6 @@ public static class ServicesConfiguration
     
     public static void ConfigureGatewayProfiles(this IMapperConfigurationExpression mc)
     {
-        mc.AddMaps(typeof(ValidateUserMappingProfile));
+        mc.AddMaps(typeof(ValidateUserMappingProfile).Assembly);
     }
 }

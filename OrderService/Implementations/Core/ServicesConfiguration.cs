@@ -1,5 +1,6 @@
 using AutoMapper;
 using Core.Abstractions.Operations;
+using Core.CoreModelsMappingProfiles;
 using Core.Operations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,6 @@ public static class ServicesConfiguration
 
     public static void ConfigureCoreProfiles(this IMapperConfigurationExpression mc)
     {
-        mc.AddMaps(typeof(CreateOrderOperation).Assembly);
+        mc.AddMaps(typeof(CreateOrderOperationMappingProfile).Assembly);
     }
 }

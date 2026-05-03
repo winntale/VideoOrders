@@ -1,17 +1,29 @@
+using System.Text.Json.Serialization;
+using Dal;
+using Gateway.Configurations;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+builder.Services.ConfigureAutoMapper();
+
+builder.Services.AddDalServices(builder.Configuration);
+
+builder.Services.ConfigureMassTransit(builder.Configuration);
+
+builder.Services.ConfigureSwaggerServices();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -25,5 +37,8 @@ app.MapControllerRoute(
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.Services.ValidateMapperProfiles();
+
+app.ConfigureSwaggerPipeline();
 
 app.Run();
