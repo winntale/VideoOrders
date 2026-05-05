@@ -11,4 +11,6 @@ public sealed record OrderDetailsOperationModel
     public required DateTimeOffset ToUtc { get; init; }
     public required OrderStatus Status { get; init; }
     public required string? FailureReason { get; init; }
+    
+    public ArchiveFileOperationModel? ArchiveFile { get; init; }
 }

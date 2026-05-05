@@ -20,6 +20,7 @@ public static class ServicesConfiguration
         );
 
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IArchiveFileRepository, ArchiveFileRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 

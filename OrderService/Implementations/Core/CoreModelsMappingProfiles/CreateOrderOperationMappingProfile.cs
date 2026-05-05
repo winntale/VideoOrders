@@ -1,6 +1,7 @@
 using AutoMapper;
 using Core.Abstractions.Enums;
 using Core.Abstractions.OperationModels;
+using Core.Resolvers;
 using Dal.Abstractions.Entities;
 using Events.Abstractions.Models;
 using UserServiceClient.Abstractions.Models;
@@ -27,9 +28,11 @@ internal sealed class CreateOrderOperationMappingProfile : Profile
                     (DateTimeOffset)ctx.Items["CreatedAtUtc"]))
             .ForMember(d => d.UpdatedAtUtc,
                 opt => opt.MapFrom((_, _, _, ctx) =>
-                    (DateTimeOffset)ctx.Items["UpdatedAtUtc"]));
+                    (DateTimeOffset)ctx.Items["UpdatedAtUtc"]))
+            .ForMember(d => d.ArchiveFile, opt => opt.Ignore());
 
-        CreateMap<Order, OrderDetailsOperationModel>();
+        CreateMap<Order, OrderDetailsOperationModel>()
+            .ForMember(d => d.ArchiveFile, o => o.MapFrom<ArchiveFileOperationResolver>());
 
         CreateMap<Order, OrderCreatedEvent>()
             .ForMember(d => d.OrderId, opt => opt.MapFrom(s => s.Id));

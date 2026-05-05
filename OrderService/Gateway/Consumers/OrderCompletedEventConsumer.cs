@@ -1,15 +1,20 @@
-﻿using Dal.Abstractions.Enums;
+﻿using Core.Options;
+using Dal.Abstractions.Enums;
 using Dal.Abstractions.Common;
+using Dal.Abstractions.Entities;
 using Dal.Abstractions.Models;
 using Dal.Abstractions.Repositories;
 using Events.Abstractions.Models;
 using MassTransit;
+using Microsoft.Extensions.Options;
 
 namespace Gateway.Consumers;
 
 public sealed class OrderCompletedEventConsumer(
     IOrderRepository orderRepository,
-    IUnitOfWork unitOfWork)
+    IArchiveFileRepository archiveFileRepository,
+    IUnitOfWork unitOfWork,
+    IOptions<ArchiveStorageOptions> storageOptions)
     : IConsumer<OrderCompletedEvent>
 {
     public async Task Consume(ConsumeContext<OrderCompletedEvent> context)
@@ -37,7 +42,21 @@ public sealed class OrderCompletedEventConsumer(
             FailureReason = null
         };
 
+        var archiveFile = new ArchiveFile
+        {
+            Id = Guid.NewGuid(),
+            OrderId = message.OrderId,
+            OriginalFileName = message.OriginalFileName,
+            StoredFileName = message.StoredFileName,
+            StoragePath = Path.Combine(storageOptions.Value.RootPath, message.StoredFileName),
+            ContentType = message.ContentType,
+            FileSize = message.FileSize,
+            CreatedAtUtc = message.CompletedAtUtc
+        };
+
         await orderRepository.UpdateAsync(updatedOrder, context.CancellationToken);
+        await archiveFileRepository.AddAsync(archiveFile, context.CancellationToken);
+        
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
     }
 }

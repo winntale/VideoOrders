@@ -9,6 +9,7 @@ public sealed class OrderDbContext(
     : DbContext(options)
 {
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<ArchiveFile> ArchiveFiles => Set<ArchiveFile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,5 +50,41 @@ public sealed class OrderDbContext(
         
         order.Property(x => x.UpdatedAtUtc)
             .IsRequired();
+        
+        modelBuilder.Entity<ArchiveFile>(b =>
+        {
+            b.ToTable("ArchiveFiles", "order");
+
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.OriginalFileName)
+                .IsRequired()
+                .HasMaxLength(260);
+
+            b.Property(x => x.StoredFileName)
+                .IsRequired()
+                .HasMaxLength(260);
+
+            b.Property(x => x.StoragePath)
+                .IsRequired()
+                .HasMaxLength(1024);
+
+            b.Property(x => x.ContentType)
+                .IsRequired()
+                .HasMaxLength(128);
+
+            b.Property(x => x.FileSize)
+                .IsRequired();
+
+            b.Property(x => x.CreatedAtUtc)
+                .IsRequired();
+
+            b.HasOne(x => x.Order)
+                .WithOne(x => x.ArchiveFile)
+                .HasForeignKey<ArchiveFile>(x => x.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasIndex(x => x.OrderId).IsUnique();
+        });
     }
 }

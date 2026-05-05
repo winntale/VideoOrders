@@ -1,9 +1,16 @@
-﻿using Events.Abstractions.Models;
+﻿
+using Events.Abstractions;
+using Events.Abstractions.Models;
+using Gateway.Options;
+using Microsoft.Extensions.Options;
 using MassTransit;
 
 namespace Gateway.Consumers;
 
-public sealed class ProcessingResourceReservedEventConsumer : IConsumer<ResourceReservedEvent>
+public sealed class ProcessingResourceReservedEventConsumer(
+    IOptions<ArchiveStorageOptions> storageOptions,
+    IPublishEndpoint publishEndpoint)
+    : IConsumer<ResourceReservedEvent>
 {
     public async Task Consume(ConsumeContext<ResourceReservedEvent> context)
     {
@@ -24,14 +31,7 @@ public sealed class ProcessingResourceReservedEventConsumer : IConsumer<Resource
 
         if (isSuccess)
         {
-            Console.WriteLine($"[ProcessingSystem] Publishing OrderCompletedEvent. OrderId: {message.OrderId}");
-            
-            await context.Publish(
-                new OrderCompletedEvent
-                {
-                    OrderId = message.OrderId,
-                    CompletedAtUtc = DateTimeOffset.UtcNow
-                });
+            await CreateArchiveFileAndPublish(message.OrderId, context.CancellationToken);
         }
         else
         {
@@ -43,5 +43,37 @@ public sealed class ProcessingResourceReservedEventConsumer : IConsumer<Resource
                     FailedAtUtc = DateTimeOffset.UtcNow
                 });
         }
+    }
+
+    private async Task CreateArchiveFileAndPublish(Guid orderId, CancellationToken cancellationToken)
+    {
+        var rootPath = storageOptions.Value.RootPath;
+        var outputFileName = $"archive-{orderId:N}.mp4";
+        var outputPath = Path.Combine(rootPath, outputFileName);
+
+        Directory.CreateDirectory(rootPath);
+
+        var inputPath = "/app/input/test-camera.mp4";
+        
+        if (!File.Exists(inputPath))
+        {
+            throw new FileNotFoundException($"Test video file not found: {inputPath}");
+        }
+
+        File.Copy(inputPath, outputPath, overwrite: true);
+
+        var fileInfo = new FileInfo(outputPath);
+
+        Console.WriteLine($"[ProcessingSystem] Archive file created: {outputPath}, size: {fileInfo.Length}");
+
+        await publishEndpoint.Publish(new OrderCompletedEvent
+        {
+            OrderId = orderId,
+            OriginalFileName = "Архив камеры.mp4",
+            StoredFileName = outputFileName,
+            ContentType = "video/mp4",
+            FileSize = fileInfo.Length,
+            CompletedAtUtc = DateTimeOffset.UtcNow
+        }, cancellationToken);
     }
 }

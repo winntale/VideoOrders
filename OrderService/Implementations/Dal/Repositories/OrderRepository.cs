@@ -18,6 +18,7 @@ internal sealed class OrderRepository(OrderDbContext dbContext)
     {
         return dbContext.Orders
             .AsNoTracking()
+            .Include(x => x.ArchiveFile)
             .FirstOrDefaultAsync(x => x.Id == repositoryModel.Id, cancellationToken);
     }
 

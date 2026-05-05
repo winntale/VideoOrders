@@ -50,6 +50,54 @@ public sealed class OrdersController(IMapper mapper)
         var response = mapper.Map<OrderResponseDto>(result.Value);
         return Ok(response);
     }
+
+    [HttpGet("{orderId:guid}/download")]
+    public async Task<IActionResult> DownloadAsync(
+        [FromServices] IDownloadArchiveFileOperation processor,
+        [FromRoute] Guid orderId,
+        CancellationToken cancellationToken)
+    {
+        var model = new DownloadArchiveFileOperationModel { OrderId = orderId };
+
+        var result = await processor.ExecuteAsync(model, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return result.Error.ToResponse();
+        }
+
+        var file = result.Value;
+
+        return File(
+            file.Stream,
+            file.ContentType,
+            file.FileName,
+            enableRangeProcessing: true);
+    }
     
-    // TODO: ChangeOrderStatus Action
+    [HttpGet("{orderId:guid}/stream")]
+    public async Task<IActionResult> StreamAsync(
+        [FromServices] IStreamArchiveFileOperation processor,
+        [FromRoute] Guid orderId,
+        CancellationToken cancellationToken)
+    {
+        var model = new StreamArchiveFileOperationModel { OrderId = orderId };
+
+        var result = await processor.ExecuteAsync(model, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return result.Error.ToResponse();
+        }
+
+        var file = result.Value;
+
+        var streamResult = new FileStreamResult(file.Stream, file.ContentType)
+        {
+            EnableRangeProcessing = true,
+            FileDownloadName = file.FileName
+        };
+
+        return streamResult;
+    }
 }

@@ -13,7 +13,7 @@ builder.Services
 builder.Services
     .AddVideoServiceClients(builder.Configuration);
 
-builder.Services.ConfigureCoreServices();
+builder.Services.ConfigureCoreServices(builder.Configuration);
 
 builder.Services.AddDbStorageContext(builder.Configuration);
 

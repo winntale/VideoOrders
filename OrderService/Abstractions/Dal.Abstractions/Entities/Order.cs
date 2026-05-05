@@ -13,4 +13,6 @@ public sealed record Order
     public string? FailureReason { get; init; }
     public DateTimeOffset CreatedAtUtc { get; init; }
     public DateTimeOffset? UpdatedAtUtc { get; init; }
+    
+    public ArchiveFile? ArchiveFile { get; set; }
 }

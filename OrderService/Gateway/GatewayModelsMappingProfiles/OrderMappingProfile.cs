@@ -14,6 +14,8 @@ internal sealed class OrderMappingProfile : Profile
             .ForMember(dest => dest.Status,
                 opt =>
                     opt.MapFrom(src => src.Status.ToString()));
+        
+        CreateMap<ArchiveFileOperationModel, ArchiveFileDto>();
     }
     
 }
