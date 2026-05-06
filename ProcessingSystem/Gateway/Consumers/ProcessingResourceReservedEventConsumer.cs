@@ -1,9 +1,10 @@
-﻿
+
 using Events.Abstractions;
 using Events.Abstractions.Models;
 using Gateway.Options;
-using Microsoft.Extensions.Options;
 using MassTransit;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace Gateway.Consumers;
 
@@ -26,41 +27,48 @@ public sealed class ProcessingResourceReservedEventConsumer(
             });
 
         await Task.Delay(TimeSpan.FromSeconds(2), context.CancellationToken);
-
-        var isSuccess = message.OrderId.GetHashCode() % 5 != 0;
-
-        if (isSuccess)
+        
+        try
         {
-            await CreateArchiveFileAndPublish(message.OrderId, context.CancellationToken);
+            await CreateArchiveFileAndPublish(message, context.CancellationToken);
         }
-        else
+        catch (Exception ex)
         {
             await context.Publish(
                 new OrderFailedEvent
                 {
                     OrderId = message.OrderId,
-                    Reason = "Processing failed due to internal pipeline error.",
+                    Reason = ex.Message,
                     FailedAtUtc = DateTimeOffset.UtcNow
                 });
         }
     }
 
-    private async Task CreateArchiveFileAndPublish(Guid orderId, CancellationToken cancellationToken)
+    private async Task CreateArchiveFileAndPublish(ResourceReservedEvent message, CancellationToken cancellationToken)
     {
         var rootPath = Environment.GetEnvironmentVariable("ArchiveStorage__RootPath") ?? "/app/storage/archive-results";
-        var outputFileName = $"archive-{orderId:N}.mp4";
+        var outputFileName = $"archive-{message.OrderId:N}.mp4";
         var outputPath = Path.Combine(rootPath, outputFileName);
 
         Directory.CreateDirectory(rootPath);
 
-        var inputPath = "/app/input/test-camera.mp4";
+        var inputPath = Path.Combine("/app/input", $"{message.CameraId:D}.mp4");
+        Console.WriteLine(inputPath);
+        
         
         if (!File.Exists(inputPath))
         {
-            throw new FileNotFoundException($"Test video file not found: {inputPath}");
+            throw new FileNotFoundException($"Source camera video file not found: {inputPath}");
         }
 
-        File.Copy(inputPath, outputPath, overwrite: true);
+        var requestedDuration = message.ToUtc - message.FromUtc;
+        if (requestedDuration <= TimeSpan.Zero)
+        {
+            throw new InvalidOperationException(
+                $"Invalid processing interval. OrderId: {message.OrderId}, FromUtc: {message.FromUtc:O}, ToUtc: {message.ToUtc:O}");
+        }
+
+        await TrimVideoAsync(inputPath, outputPath, requestedDuration, cancellationToken);
 
         var fileInfo = new FileInfo(outputPath);
 
@@ -68,12 +76,48 @@ public sealed class ProcessingResourceReservedEventConsumer(
 
         await publishEndpoint.Publish(new OrderCompletedEvent
         {
-            OrderId = orderId,
+            OrderId = message.OrderId,
             OriginalFileName = "Архив камеры.mp4",
             StoredFileName = outputFileName,
             ContentType = "video/mp4",
             FileSize = fileInfo.Length,
             CompletedAtUtc = DateTimeOffset.UtcNow
         }, cancellationToken);
+    }
+
+    private static async Task TrimVideoAsync(
+        string inputPath,
+        string outputPath,
+        TimeSpan requestedDuration,
+        CancellationToken cancellationToken)
+    {
+        var durationSeconds = requestedDuration.TotalSeconds.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        var arguments = $"-y -i \"{inputPath}\" -t {durationSeconds} -c:v libx264 -c:a aac \"{outputPath}\"";
+
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "ffmpeg",
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }
+        };
+
+        process.Start();
+        var stdOutTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+        var stdErrTask = process.StandardError.ReadToEndAsync(cancellationToken);
+        await process.WaitForExitAsync(cancellationToken);
+        var stdOut = await stdOutTask;
+        var stdErr = await stdErrTask;
+
+        if (process.ExitCode != 0)
+        {
+            throw new InvalidOperationException(
+                $"ffmpeg failed with exit code {process.ExitCode}. StdOut: {stdOut}. StdErr: {stdErr}");
+        }
     }
 }

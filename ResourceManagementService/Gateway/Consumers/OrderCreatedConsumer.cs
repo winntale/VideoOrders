@@ -19,6 +19,9 @@ public sealed class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
                 new ResourceReservedEvent
                 {
                     OrderId = message.OrderId,
+                    CameraId = message.CameraId,
+                    FromUtc = message.FromUtc,
+                    ToUtc = message.ToUtc,
                     ReservedAtUtc = DateTimeOffset.UtcNow
                 });
         }

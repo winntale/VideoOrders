@@ -73,7 +73,7 @@ services:
       target: runtime
     container_name: processing-system
     volumes:
-      - ./test-videos:/app/input:ro
+      - ./test-videos:/app/input
       - ./archive_storage:/app/storage/archive-results
       - ./logs:/app/logs
     depends_on:
