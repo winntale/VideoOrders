@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   orders-rabbitmq:
-    image: rabbitmq:3-management
+    image: masstransit/rabbitmq:latest
     container_name: orders-rabbitmq
     hostname: rabbitmq
     environment:
@@ -64,6 +64,9 @@ services:
     restart: unless-stopped
 
   processing-system:
+    environment:
+      - ArchiveStorage__RootPath=/app/storage/archive-results
+      - ASPNETCORE_ENVIRONMENT=Development
     build:
       context: .
       dockerfile: ProcessingSystem/Dockerfile
@@ -71,7 +74,8 @@ services:
     container_name: processing-system
     volumes:
       - ./test-videos:/app/input:ro
-      - archive_storage:/app/storage/archive-results
+      - ./archive_storage:/app/storage/archive-results
+      - ./logs:/app/logs
     depends_on:
       - orders-rabbitmq
     restart: unless-stopped

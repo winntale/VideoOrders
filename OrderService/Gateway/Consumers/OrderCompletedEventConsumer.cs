@@ -13,8 +13,7 @@ namespace Gateway.Consumers;
 public sealed class OrderCompletedEventConsumer(
     IOrderRepository orderRepository,
     IArchiveFileRepository archiveFileRepository,
-    IUnitOfWork unitOfWork,
-    IOptions<ArchiveStorageOptions> storageOptions)
+    IUnitOfWork unitOfWork)
     : IConsumer<OrderCompletedEvent>
 {
     public async Task Consume(ConsumeContext<OrderCompletedEvent> context)
@@ -42,13 +41,17 @@ public sealed class OrderCompletedEventConsumer(
             FailureReason = null
         };
 
+        var fullPath = Path.Combine("../../archive_storage", message.StoredFileName).Replace('\\', '/');
+
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath) ?? string.Empty);
+
         var archiveFile = new ArchiveFile
         {
             Id = Guid.NewGuid(),
             OrderId = message.OrderId,
             OriginalFileName = message.OriginalFileName,
             StoredFileName = message.StoredFileName,
-            StoragePath = Path.Combine(storageOptions.Value.RootPath, message.StoredFileName),
+            StoragePath = fullPath,
             ContentType = message.ContentType,
             FileSize = message.FileSize,
             CreatedAtUtc = message.CompletedAtUtc

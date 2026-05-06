@@ -102,7 +102,16 @@ internal sealed class CreateOrderOperation(
         await repository.AddAsync(order, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var orderCreatedEvent = mapper.Map<OrderCreatedEvent>(order);
+        var orderCreatedEvent = new OrderCreatedEvent
+        {
+            OrderId = order.Id,
+            UserId = order.UserId,
+            CameraId = order.CameraId,
+            FromUtc = order.FromUtc,
+            ToUtc = order.ToUtc,
+            CreatedAtUtc = order.CreatedAtUtc
+        };
+        
         await publishEndpoint.Publish(orderCreatedEvent, cancellationToken);
         
         var resultModel = mapper.Map<OrderDetailsOperationModel>(order);

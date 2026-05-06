@@ -47,7 +47,7 @@ public sealed class ProcessingResourceReservedEventConsumer(
 
     private async Task CreateArchiveFileAndPublish(Guid orderId, CancellationToken cancellationToken)
     {
-        var rootPath = storageOptions.Value.RootPath;
+        var rootPath = Environment.GetEnvironmentVariable("ArchiveStorage__RootPath") ?? "/app/storage/archive-results";
         var outputFileName = $"archive-{orderId:N}.mp4";
         var outputPath = Path.Combine(rootPath, outputFileName);
 

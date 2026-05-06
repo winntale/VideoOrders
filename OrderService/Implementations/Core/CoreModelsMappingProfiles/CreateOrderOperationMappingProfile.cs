@@ -32,10 +32,16 @@ internal sealed class CreateOrderOperationMappingProfile : Profile
             .ForMember(d => d.ArchiveFile, opt => opt.Ignore());
 
         CreateMap<Order, OrderDetailsOperationModel>()
-            .ForMember(d => d.ArchiveFile, o => o.MapFrom<ArchiveFileOperationResolver>());
+            .ForMember(d => d.ArchiveFile, o => o.Ignore());
+        //
+        // CreateMap<Order, OrderCreatedEvent>()
+        //     .ForMember(d => d.OrderId, opt => opt.MapFrom(s => s.Id))
+        //     .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.UserId))
+        //     .ForMember(d => d.CameraId, opt => opt.MapFrom(s => s.CameraId))
+        //     .ForMember(d => d.FromUtc, opt => opt.MapFrom(s => s.FromUtc))
+        //     .ForMember(d => d.ToUtc, opt => opt.MapFrom(s => s.ToUtc))
+        //     .ForMember(d => d.CreatedAtUtc, opt => opt.MapFrom(s => s.CreatedAtUtc))
 
-        CreateMap<Order, OrderCreatedEvent>()
-            .ForMember(d => d.OrderId, opt => opt.MapFrom(s => s.Id));
 
         CreateMap<CreateOrderOperationModel, ValidateAccessClientModel>();
 

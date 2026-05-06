@@ -41,5 +41,11 @@ app.MapControllerRoute(
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.Use(async (context, next) =>
+{
+    Directory.CreateDirectory("../../archive_storage");
+    await next();
+});
+
 
 app.Run();

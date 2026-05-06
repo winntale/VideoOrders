@@ -7,6 +7,8 @@ public sealed class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
 {
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
+        Console.WriteLine($"Получен OrderCreated: {context.Message.OrderId}");
+
         var message = context.Message;
 
         var resourcesAvailable = true;
