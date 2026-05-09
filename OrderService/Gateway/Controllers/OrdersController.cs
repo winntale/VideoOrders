@@ -70,7 +70,7 @@ public sealed class OrdersController(IMapper mapper)
         return Ok(response);
     }
 
-    [HttpGet("{orderId:guid}/download")]
+    [HttpGet("/Orders/{orderId:guid}/download")]
     public async Task<IActionResult> DownloadAsync(
         [FromServices] IDownloadArchiveFileOperation processor,
         [FromRoute] Guid orderId,
@@ -94,7 +94,7 @@ public sealed class OrdersController(IMapper mapper)
             enableRangeProcessing: true);
     }
     
-    [HttpGet("{orderId:guid}/stream")]
+    [HttpGet("/Orders/{orderId:guid}/stream")]
     public async Task<IActionResult> StreamAsync(
         [FromServices] IStreamArchiveFileOperation processor,
         [FromRoute] Guid orderId,

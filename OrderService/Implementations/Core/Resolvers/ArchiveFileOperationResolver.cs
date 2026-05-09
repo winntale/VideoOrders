@@ -22,8 +22,8 @@ public sealed class ArchiveFileOperationResolver : IValueResolver<Order, OrderDe
             ContentType = source.ArchiveFile.ContentType,
             FileSize = source.ArchiveFile.FileSize,
             IsReady = source.Status == OrderStatus.Completed,
-            DownloadUrl = $"/Orders/Download/{source.Id}",
-            StreamUrl = $"/Orders/Stream/{source.Id}"
+            DownloadUrl = $"/Orders/{source.Id}/download",
+            StreamUrl = $"/Orders/{source.Id}/stream"
         };
     }
 }
