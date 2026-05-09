@@ -51,6 +51,25 @@ public sealed class OrdersController(IMapper mapper)
         return Ok(response);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<OrderResponseDto>>> ListAsync(
+        [FromServices] IListOrdersByUserOperation processor,
+        [FromQuery] Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var operationModel = new ListOrdersByUserOperationModel { UserId = userId };
+
+        var result = await processor.ExecuteAsync(operationModel, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return result.Error.ToResponse();
+        }
+
+        var response = mapper.Map<IReadOnlyList<OrderResponseDto>>(result.Value);
+        return Ok(response);
+    }
+
     [HttpGet("{orderId:guid}/download")]
     public async Task<IActionResult> DownloadAsync(
         [FromServices] IDownloadArchiveFileOperation processor,

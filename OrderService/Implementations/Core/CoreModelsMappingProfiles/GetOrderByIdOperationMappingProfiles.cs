@@ -10,6 +10,8 @@ internal sealed class GetOrderByIdOperationMappingProfiles : Profile
     public GetOrderByIdOperationMappingProfiles()
     {
         CreateMap<GetOrderByIdOperationModel, GetOrderByIdRepositoryModel>();
+
+        CreateMap<ListOrdersByUserOperationModel, ListOrdersByUserRepositoryModel>();
         
         CreateMap<ArchiveFile, ArchiveFileOperationModel>()
             .ForMember(d => d.OrderId, o => o.Ignore())

@@ -13,6 +13,10 @@ public interface IOrderRepository
         GetOrderByIdRepositoryModel repositoryModel,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<Order>> ListByUserAsync(
+        ListOrdersByUserRepositoryModel repositoryModel,
+        CancellationToken cancellationToken);
+
     Task UpdateAsync(
         Order order, 
         CancellationToken cancellationToken);

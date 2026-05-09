@@ -1,31 +1,71 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+* { box-sizing: border-box; }
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f6f7fb;
+    color: #1f2330;
 }
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+button, .primary {
+    background: #2563eb; color: #fff; border: 0; border-radius: 6px;
+    padding: 8px 16px; cursor: pointer; font-size: 14px;
+}
+button:disabled { background: #94a3b8; cursor: not-allowed; }
+button.secondary { background: #e2e8f0; color: #1f2330; }
+input[type="text"], input[type="datetime-local"], input[name="userId"] {
+    width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;
+}
+label { display: block; margin: 8px 0; font-size: 13px; color: #475569; }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.navbar { background: #1f2330; color: #fff; }
+.navbar-inner {
+    max-width: 1100px; margin: 0 auto; padding: 12px 24px;
+    display: flex; align-items: center; gap: 24px;
 }
+.navbar a { color: #fff; }
+.brand { font-weight: 700; }
+.nav { display: flex; gap: 16px; flex: 1; }
+.logout-form { display: flex; align-items: center; gap: 12px; }
+.user-id { font-family: monospace; font-size: 12px; opacity: 0.8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.container { max-width: 1100px; margin: 24px auto; padding: 0 24px; }
+
+.muted { color: #64748b; }
+.status { min-height: 20px; font-size: 13px; margin-top: 8px; }
+.status.ok { color: #15803d; }
+.status.bad { color: #b91c1c; }
+.error { color: #b91c1c; font-size: 13px; }
+
+.auth-card {
+    max-width: 420px; margin: 60px auto; background: #fff;
+    padding: 32px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
+.auth-card h1 { margin: 0 0 8px; }
+
+.page-header { display: flex; justify-content: space-between; align-items: center; }
+
+.new-order .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 768px) { .new-order .grid { grid-template-columns: 1fr; } }
+.card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.card h2 { margin-top: 0; font-size: 16px; }
+
+.camera-list { list-style: none; padding: 0; margin: 0; max-height: 360px; overflow: auto; }
+.camera-list li {
+    padding: 10px 12px; border-radius: 6px; cursor: pointer; border: 1px solid transparent;
+    display: flex; justify-content: space-between; gap: 8px;
+}
+.camera-list li:hover { background: #f1f5f9; }
+.camera-list li.selected { background: #dbeafe; border-color: #93c5fd; }
+.camera-list .size { font-size: 12px; color: #64748b; }
+
+.orders-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.orders-table th, .orders-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+.orders-table th { background: #f8fafc; color: #475569; font-weight: 600; }
+.status-pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+.status-pill.completed { background: #dcfce7; color: #15803d; }
+.status-pill.failed { background: #fee2e2; color: #b91c1c; }
+.status-pill.pending, .status-pill.created, .status-pill.inprogress { background: #fef3c7; color: #92400e; }
+
+dialog { border: 0; border-radius: 10px; padding: 16px; max-width: 80vw; }
+dialog::backdrop { background: rgba(0,0,0,0.6); }
