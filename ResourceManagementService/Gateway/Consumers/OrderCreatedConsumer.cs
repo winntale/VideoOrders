@@ -22,7 +22,8 @@ public sealed class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
                     CameraId = message.CameraId,
                     FromUtc = message.FromUtc,
                     ToUtc = message.ToUtc,
-                    ReservedAtUtc = DateTimeOffset.UtcNow
+                    ReservedAtUtc = DateTimeOffset.UtcNow,
+                    SegmentStartUtc = message.SegmentStartUtc
                 });
         }
         else

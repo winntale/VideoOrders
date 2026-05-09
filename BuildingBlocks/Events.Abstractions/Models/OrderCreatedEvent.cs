@@ -8,4 +8,5 @@ public sealed record OrderCreatedEvent
     public required DateTimeOffset FromUtc { get; init; }
     public required DateTimeOffset ToUtc { get; init; }
     public required DateTimeOffset CreatedAtUtc { get; init; }
+    public DateTimeOffset? SegmentStartUtc { get; init; }
 }

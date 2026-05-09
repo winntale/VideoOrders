@@ -18,4 +18,17 @@ internal sealed class VideoSegmentRepository(VideoArchiveDbContext dbContext, IM
                      && x.ToUtc >= repositoryModel.ToUtc,
                 cancellationToken);
     }
+
+    public Task<Dal.Abstractions.Entities.VideoSegment?> GetCoveringSegmentAsync(
+        VideoSegmentRepositoryModel repositoryModel,
+        CancellationToken cancellationToken)
+    {
+        return dbContext.VideoSegments
+            .AsNoTracking()
+            .Where(x => x.CameraId == repositoryModel.CameraId
+                        && x.FromUtc <= repositoryModel.FromUtc
+                        && x.ToUtc >= repositoryModel.ToUtc)
+            .OrderBy(x => x.FromUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

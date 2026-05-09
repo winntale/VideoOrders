@@ -68,7 +68,16 @@ public sealed class ProcessingResourceReservedEventConsumer(
                 $"Invalid processing interval. OrderId: {message.OrderId}, FromUtc: {message.FromUtc:O}, ToUtc: {message.ToUtc:O}");
         }
 
-        await TrimVideoAsync(inputPath, outputPath, requestedDuration, cancellationToken);
+        var startOffset = message.SegmentStartUtc is { } segmentStart
+            ? message.FromUtc - segmentStart
+            : TimeSpan.Zero;
+
+        if (startOffset < TimeSpan.Zero)
+        {
+            startOffset = TimeSpan.Zero;
+        }
+
+        await TrimVideoAsync(inputPath, outputPath, startOffset, requestedDuration, cancellationToken);
 
         var fileInfo = new FileInfo(outputPath);
 
@@ -88,11 +97,15 @@ public sealed class ProcessingResourceReservedEventConsumer(
     private static async Task TrimVideoAsync(
         string inputPath,
         string outputPath,
+        TimeSpan startOffset,
         TimeSpan requestedDuration,
         CancellationToken cancellationToken)
     {
-        var durationSeconds = requestedDuration.TotalSeconds.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        var arguments = $"-y -i \"{inputPath}\" -t {durationSeconds} -c:v libx264 -c:a aac \"{outputPath}\"";
+        var culture = System.Globalization.CultureInfo.InvariantCulture;
+        var durationSeconds = requestedDuration.TotalSeconds.ToString("0.###", culture);
+        var startSeconds = startOffset.TotalSeconds.ToString("0.###", culture);
+        var seekArg = startOffset > TimeSpan.Zero ? $"-ss {startSeconds} " : string.Empty;
+        var arguments = $"-y {seekArg}-i \"{inputPath}\" -t {durationSeconds} -c:v libx264 -c:a aac \"{outputPath}\"";
 
         var process = new Process
         {

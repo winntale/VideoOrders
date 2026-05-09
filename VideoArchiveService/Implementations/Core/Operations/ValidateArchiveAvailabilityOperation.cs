@@ -39,17 +39,18 @@ internal sealed class ValidateArchiveAvailabilityOperation(
         }
 
         var videoSegmentRepositoryModel = mapper.Map<VideoSegmentRepositoryModel>(operationModel);
-        
-        var isAvailable = await videoSegmentRepository.ExistsCoveringSegmentAsync(
+
+        var coveringSegment = await videoSegmentRepository.GetCoveringSegmentAsync(
             videoSegmentRepositoryModel,
             cancellationToken);
 
         var resultModel = new ArchiveAvailabilityResultOperationModel
         {
-            IsAvailable = isAvailable,
-            DenyReason = isAvailable
+            IsAvailable = coveringSegment is not null,
+            DenyReason = coveringSegment is not null
                 ? null
-                : "Archive for the specified time interval is unavailable."
+                : "Archive for the specified time interval is unavailable.",
+            SegmentStartUtc = coveringSegment?.FromUtc
         };
 
         return resultModel;
