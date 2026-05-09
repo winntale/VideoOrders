@@ -17,6 +17,7 @@ public static class ServicesConfiguration
     {
         services.AddScoped<ICreateOrderOperation, CreateOrderOperation>();
         services.AddScoped<IGetOrderByIdOperation, GetOrderByIdOperation>();
+        services.AddScoped<IListOrdersByUserOperation, ListOrdersByUserOperation>();
         services.AddScoped<IDownloadArchiveFileOperation, DownloadArchiveFileOperation>();
         services.AddScoped<IStreamArchiveFileOperation, StreamArchiveFileOperation>();
 

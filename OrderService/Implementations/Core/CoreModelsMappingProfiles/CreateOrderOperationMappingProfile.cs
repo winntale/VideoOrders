@@ -32,7 +32,7 @@ internal sealed class CreateOrderOperationMappingProfile : Profile
             .ForMember(d => d.ArchiveFile, opt => opt.Ignore());
 
         CreateMap<Order, OrderDetailsOperationModel>()
-            .ForMember(d => d.ArchiveFile, o => o.Ignore());
+            .ForMember(d => d.ArchiveFile, o => o.MapFrom<ArchiveFileOperationResolver>());
         //
         // CreateMap<Order, OrderCreatedEvent>()
         //     .ForMember(d => d.OrderId, opt => opt.MapFrom(s => s.Id))

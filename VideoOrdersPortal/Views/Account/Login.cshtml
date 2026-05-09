@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Вход";
+}
+<section class="auth-card">
+    <h1>Вход</h1>
+    <p class="muted">Введите ваш UserId (GUID), чтобы войти в портал.</p>
+    <form method="post" asp-controller="Account" asp-action="Login">
+        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+        <label>
+            UserId
+            <input name="userId" required placeholder="00000000-0000-0000-0000-000000000000" autofocus />
+        </label>
+        <div asp-validation-summary="All" class="error"></div>
+        <button type="submit">Войти</button>
+    </form>
+</section>

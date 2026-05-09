@@ -72,6 +72,8 @@ services:
       dockerfile: ProcessingSystem/Dockerfile
       target: runtime
     container_name: processing-system
+    ports:
+      - "5180:8080"
     volumes:
       - ./test-videos:/app/input
       - ./archive_storage:/app/storage/archive-results

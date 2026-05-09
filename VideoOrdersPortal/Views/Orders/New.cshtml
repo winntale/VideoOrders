@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Новый заказ";
+}
+<section class="new-order">
+    <h1>Новый заказ архива</h1>
+
+    <div class="grid">
+        <div class="card">
+            <h2>1. Камера</h2>
+            <ul id="camera-list" class="camera-list">
+                <li class="muted">Загрузка камер…</li>
+            </ul>
+            <p id="access-status" class="status"></p>
+        </div>
+
+        <div class="card">
+            <h2>2. Интервал</h2>
+            <label>С (UTC)
+                <input type="datetime-local" id="from-utc" />
+            </label>
+            <label>По (UTC)
+                <input type="datetime-local" id="to-utc" />
+            </label>
+            <p id="archive-status" class="status"></p>
+
+            <button id="submit" type="button" disabled>Заказать</button>
+            <p id="submit-status" class="status"></p>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/js/orders-new.js" asp-append-version="true"></script>
+}

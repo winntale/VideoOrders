@@ -1,24 +1,27 @@
 using Gateway.Configurations;
+using Gateway.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
+
+builder.Services.Configure<CameraInputOptions>(builder.Configuration.GetSection("CameraInput"));
+builder.Services.Configure<ArchiveStorageOptions>(builder.Configuration.GetSection("ArchiveStorage"));
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy => policy
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
 
 builder.Services.ConfigureMassTransit(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
 app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapStaticAssets();
-
-app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+app.UseCors();
+app.MapControllers();
 
 app.Run();
