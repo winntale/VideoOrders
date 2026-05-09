@@ -109,7 +109,8 @@ internal sealed class CreateOrderOperation(
             CameraId = order.CameraId,
             FromUtc = order.FromUtc,
             ToUtc = order.ToUtc,
-            CreatedAtUtc = order.CreatedAtUtc
+            CreatedAtUtc = order.CreatedAtUtc,
+            SegmentStartUtc = videoArchiveServiceClientResult.Value.SegmentStartUtc
         };
         
         await publishEndpoint.Publish(orderCreatedEvent, cancellationToken);

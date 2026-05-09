@@ -7,4 +7,5 @@ public sealed record ResourceReservedEvent
     public required DateTimeOffset FromUtc { get; init; }
     public required DateTimeOffset ToUtc { get; init; }
     public required DateTimeOffset ReservedAtUtc { get; init; }
+    public DateTimeOffset? SegmentStartUtc { get; init; }
 }
