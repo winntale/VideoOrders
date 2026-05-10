@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Регистрация";
+}
+<section class="auth-card">
+    <h1>Регистрация</h1>
+    <form method="post" asp-controller="Account" asp-action="Register">
+        <label>
+            Логин
+            <input name="login" required minlength="3" autofocus autocomplete="username" />
+        </label>
+        <label>
+            Пароль
+            <input name="password" type="password" required minlength="6" autocomplete="new-password" />
+        </label>
+        <div asp-validation-summary="All" class="error"></div>
+        <button type="submit">Создать аккаунт</button>
+    </form>
+    <p class="muted">Уже есть аккаунт? <a asp-action="Login">Войти</a></p>
+</section>

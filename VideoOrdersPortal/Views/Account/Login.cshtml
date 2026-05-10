@@ -3,14 +3,18 @@
 }
 <section class="auth-card">
     <h1>Вход</h1>
-    <p class="muted">Введите ваш UserId (GUID), чтобы войти в портал.</p>
     <form method="post" asp-controller="Account" asp-action="Login">
         <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
         <label>
-            UserId
-            <input name="userId" required placeholder="00000000-0000-0000-0000-000000000000" autofocus />
+            Логин
+            <input name="login" required autofocus autocomplete="username" />
+        </label>
+        <label>
+            Пароль
+            <input name="password" type="password" required autocomplete="current-password" />
         </label>
         <div asp-validation-summary="All" class="error"></div>
         <button type="submit">Войти</button>
     </form>
+    <p class="muted">Нет аккаунта? <a asp-action="Register">Зарегистрироваться</a></p>
 </section>

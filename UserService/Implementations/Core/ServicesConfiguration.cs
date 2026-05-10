@@ -11,6 +11,8 @@ public static class ServicesConfiguration
     public static void ConfigureCoreServices(this IServiceCollection services)
     {
         services.AddScoped<IValidateUserAccessOperation, ValidateUserAccessOperation>();
+        services.AddScoped<ILoginUserOperation, LoginUserOperation>();
+        services.AddScoped<IRegisterUserOperation, RegisterUserOperation>();
     }
     
     public static void ConfigureCoreProfiles(this IMapperConfigurationExpression mc)

@@ -25,6 +25,8 @@ public sealed class UserDbContext : DbContext
         var user = modelBuilder.Entity<User>();
         user.HasKey(x => x.Id);
         user.Property(x => x.Login).IsRequired().HasMaxLength(128);
+        user.HasIndex(x => x.Login).IsUnique();
+        user.Property(x => x.PasswordHash).IsRequired().HasMaxLength(256);
         user.Property(x => x.Status).IsRequired();
 
         var access = modelBuilder.Entity<UserCameraAccess>();

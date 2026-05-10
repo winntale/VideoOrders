@@ -68,6 +68,9 @@ public sealed record Error
 
     public static Error Conflict(string message) =>
         new(message, ErrorType.Conflict);
+
+    public static Error Forbidden(string message) =>
+        new(message, ErrorType.Forbidden);
 }
 
 public enum ErrorType
@@ -76,5 +79,6 @@ public enum ErrorType
     Validation,
     NotFound,
     Failure,
-    Conflict
+    Conflict,
+    Forbidden
 }
