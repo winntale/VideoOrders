@@ -19,13 +19,19 @@ public sealed class CamerasApiController(
         var catalogTask = archive.ListCamerasAsync(ct);
         await Task.WhenAll(filesTask, catalogTask);
 
-        var nameById = (await catalogTask).ToDictionary(x => x.Id, x => x.Name);
+        var catalogById = (await catalogTask).ToDictionary(x => x.Id);
 
         var result = (await filesTask)
-            .Select(f => new CameraDto(
-                f.Id,
-                nameById.TryGetValue(f.Id, out var name) ? name : f.DisplayName,
-                f.FileSize))
+            .Select(f =>
+            {
+                catalogById.TryGetValue(f.Id, out var meta);
+                var name = meta?.Name ?? f.DisplayName;
+                var segments = (meta?.Segments ?? Array.Empty<SegmentRangeDto>())
+                    .OrderBy(s => s.FromUtc)
+                    .Select(s => new SegmentRange(s.FromUtc, s.ToUtc))
+                    .ToList();
+                return new CameraDto(f.Id, name, f.FileSize, segments);
+            })
             .ToList();
 
         return Ok(result);

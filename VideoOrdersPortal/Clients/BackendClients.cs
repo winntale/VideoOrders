@@ -84,7 +84,12 @@ public sealed record AuthenticatedUser(Guid UserId, string Login);
 
 public sealed record AuthResult(AuthenticatedUser? User, string? Error);
 
-public sealed record VideoArchiveCameraDto(Guid Id, string Name, bool IsActive);
+public sealed record SegmentRangeDto(DateTimeOffset FromUtc, DateTimeOffset ToUtc);
+public sealed record VideoArchiveCameraDto(
+    Guid Id,
+    string Name,
+    bool IsActive,
+    IReadOnlyList<SegmentRangeDto>? Segments);
 
 public sealed class VideoArchiveServiceClient(HttpClient http)
 {

@@ -16,15 +16,11 @@
         ResourceReservationFailed: 'Ресурсы недоступны'
     };
 
-    function getLastSeen() {
+    function getLastSeenMs() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return 0;
         const t = Date.parse(raw);
         return Number.isFinite(t) ? t : 0;
-    }
-
-    function setLastSeen(iso) {
-        localStorage.setItem(STORAGE_KEY, iso);
     }
 
     function showToast(notification) {
@@ -50,13 +46,18 @@
         if (!badge) return;
         if (count > 0) {
             badge.textContent = count > 99 ? '99+' : String(count);
-            badge.hidden = false;
+            badge.style.display = '';
         } else {
-            badge.hidden = true;
+            badge.textContent = '';
+            badge.style.display = 'none';
         }
     }
 
-    let lastSeenMs = getLastSeen();
+    setBadge(0);
+
+    // Toasts only fire once per id per tab session; unread count is recomputed
+    // each tick from localStorage so "mark all read" in another tab is reflected.
+    const toastedIds = new Set();
 
     async function tick() {
         try {
@@ -64,33 +65,34 @@
             if (!res.ok) return;
             const list = await res.json();
 
-            const fresh = list.filter(n => Date.parse(n.createdAtUtc) > lastSeenMs);
+            const lastSeenMs = getLastSeenMs();
+            const unread = list.filter(n => Date.parse(n.createdAtUtc) > lastSeenMs);
 
-            for (const n of fresh.slice().reverse()) {
+            const toToast = unread
+                .filter(n => !toastedIds.has(n.id))
+                .slice()
+                .reverse();
+            for (const n of toToast) {
                 showToast(n);
+                toastedIds.add(n.id);
             }
 
-            setBadge(fresh.length);
-
-            if (fresh.length > 0) {
-                lastSeenMs = Math.max(...fresh.map(n => Date.parse(n.createdAtUtc)));
-                setLastSeen(new Date(lastSeenMs).toISOString());
-            }
+            setBadge(unread.length);
         } catch {
             /* network blip — ignore */
         }
     }
 
-    window.addEventListener('focus', () => {
-        lastSeenMs = getLastSeen();
-        tick();
-    });
+    window.addEventListener('focus', () => tick());
 
     document.addEventListener('notifications:mark-read', () => {
         const now = new Date().toISOString();
-        setLastSeen(now);
-        lastSeenMs = Date.parse(now);
+        localStorage.setItem(STORAGE_KEY, now);
         setBadge(0);
+    });
+
+    window.addEventListener('storage', e => {
+        if (e.key === STORAGE_KEY) tick();
     });
 
     tick();

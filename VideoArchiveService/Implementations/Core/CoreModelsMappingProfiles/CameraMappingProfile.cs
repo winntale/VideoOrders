@@ -8,6 +8,9 @@ internal sealed class CameraMappingProfile : Profile
 {
     public CameraMappingProfile()
     {
-        CreateMap<Camera, CameraOperationModel>();
+        CreateMap<Camera, CameraOperationModel>()
+            .ForMember(d => d.Segments, o => o.MapFrom(s => s.VideoSegments));
+
+        CreateMap<VideoSegment, SegmentRangeOperationModel>();
     }
 }
