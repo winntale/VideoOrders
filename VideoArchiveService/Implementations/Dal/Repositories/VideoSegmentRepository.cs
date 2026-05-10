@@ -31,4 +31,20 @@ internal sealed class VideoSegmentRepository(VideoArchiveDbContext dbContext, IM
             .OrderBy(x => x.FromUtc)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Dal.Abstractions.Entities.VideoSegment>> ListByCameraIdsAsync(
+        IReadOnlyCollection<Guid> cameraIds,
+        CancellationToken cancellationToken)
+    {
+        if (cameraIds.Count == 0)
+        {
+            return Array.Empty<Dal.Abstractions.Entities.VideoSegment>();
+        }
+
+        return await dbContext.VideoSegments
+            .AsNoTracking()
+            .Where(x => cameraIds.Contains(x.CameraId))
+            .OrderBy(x => x.FromUtc)
+            .ToListAsync(cancellationToken);
+    }
 }

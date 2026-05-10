@@ -10,7 +10,5 @@ public sealed class VideoArchiveMappingProfile : Profile
     {
         CreateMap<ValidateArchiveAvailabilityRequestDto, ValidateArchiveAvailabilityOperationModel>();
         CreateMap<ArchiveAvailabilityResultOperationModel, ArchiveAvailabilityResponseDto>();
-        CreateMap<CameraOperationModel, CameraDto>();
-        CreateMap<SegmentRangeOperationModel, SegmentRangeDto>();
     }
 }

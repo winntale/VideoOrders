@@ -12,4 +12,8 @@ public interface IVideoSegmentRepository
     Task<VideoSegment?> GetCoveringSegmentAsync(
         VideoSegmentRepositoryModel repositoryModel,
         CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<VideoSegment>> ListByCameraIdsAsync(
+        IReadOnlyCollection<Guid> cameraIds,
+        CancellationToken cancellationToken);
 }

@@ -20,7 +20,6 @@ internal sealed class CameraRepository(VideoArchiveDbContext dbContext, IMapper 
     {
         return await dbContext.Cameras
             .AsNoTracking()
-            .Include(x => x.VideoSegments)
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }
