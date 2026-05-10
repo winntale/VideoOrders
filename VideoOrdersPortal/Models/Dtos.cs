@@ -1,6 +1,12 @@
 namespace VideoOrdersPortal.Models;
 
-public sealed record CameraDto(Guid Id, string Name, long FileSize);
+public sealed record SegmentRange(DateTimeOffset FromUtc, DateTimeOffset ToUtc);
+
+public sealed record CameraDto(
+    Guid Id,
+    string Name,
+    long FileSize,
+    IReadOnlyList<SegmentRange> Segments);
 
 public sealed record UserNotificationDto(
     Guid Id,

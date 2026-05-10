@@ -7,6 +7,16 @@
     const submitBtn = document.getElementById('submit');
     const submitStatus = document.getElementById('submit-status');
 
+    const availabilityBox = document.getElementById('camera-availability');
+    const segmentList = document.getElementById('segment-list');
+
+    const MSK = new Intl.DateTimeFormat('ru-RU', {
+        timeZone: 'Europe/Moscow',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+    });
+    const fmtMsk = iso => MSK.format(new Date(iso));
+
     let selectedCamera = null;
     let accessOk = false;
     let archiveOk = false;
@@ -48,10 +58,24 @@
         }
     }
 
+    function renderAvailability(cam) {
+        const segments = cam.segments || [];
+        if (segments.length === 0) {
+            availabilityBox.hidden = false;
+            segmentList.innerHTML = '<li class="muted">Сегменты архива не найдены — посегментная информация в каталоге отсутствует.</li>';
+            return;
+        }
+        segmentList.innerHTML = segments
+            .map(s => `<li><code>${fmtMsk(s.fromUtc)}</code> &mdash; <code>${fmtMsk(s.toUtc)}</code></li>`)
+            .join('');
+        availabilityBox.hidden = false;
+    }
+
     async function selectCamera(cam, li) {
         selectedCamera = cam;
         for (const item of cameraList.children) item.classList.remove('selected');
         li.classList.add('selected');
+        renderAvailability(cam);
         setStatus(accessStatus, 'Проверка доступа…', true);
         accessOk = false;
         updateSubmit();
