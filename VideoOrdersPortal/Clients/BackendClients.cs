@@ -30,8 +30,35 @@ public sealed class UserServiceClient(HttpClient http)
         return new ValidationResult(body?.IsAllowed ?? false, body?.DenyReason);
     }
 
+    public Task<AuthResult> LoginAsync(string login, string password, CancellationToken ct) =>
+        AuthAsync("/Auth/Login", login, password, ct);
+
+    public Task<AuthResult> RegisterAsync(string login, string password, CancellationToken ct) =>
+        AuthAsync("/Auth/Register", login, password, ct);
+
+    private async Task<AuthResult> AuthAsync(string path, string login, string password, CancellationToken ct)
+    {
+        var response = await http.PostAsJsonAsync(path, new { Login = login, Password = password }, ct);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadFromJsonAsync<AuthenticatedUser>(cancellationToken: ct);
+            return body is null
+                ? new AuthResult(null, "Empty response from auth service.")
+                : new AuthResult(body, null);
+        }
+
+        var errorBody = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: ct);
+        return new AuthResult(null, errorBody?.Error ?? $"Auth failed: {(int)response.StatusCode}");
+    }
+
     private sealed record UserAccessResponse(bool IsAllowed, string? DenyReason);
+    private sealed record ErrorResponse(string? Error);
 }
+
+public sealed record AuthenticatedUser(Guid UserId, string Login);
+
+public sealed record AuthResult(AuthenticatedUser? User, string? Error);
 
 public sealed class VideoArchiveServiceClient(HttpClient http)
 {

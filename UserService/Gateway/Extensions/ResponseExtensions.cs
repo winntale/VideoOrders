@@ -12,11 +12,11 @@ public static class ResponseExtensions
             ErrorType.Validation => StatusCodes.Status400BadRequest,
             ErrorType.NotFound   => StatusCodes.Status404NotFound,
             ErrorType.Conflict   => StatusCodes.Status409Conflict,
+            ErrorType.Forbidden  => StatusCodes.Status403Forbidden,
             ErrorType.Failure    => StatusCodes.Status500InternalServerError,
             _                    => StatusCodes.Status500InternalServerError
         };
 
-        var response = new JsonResult(new { error = error.Message });
-        return new ObjectResult(response) { StatusCode = statusCode };
+        return new ObjectResult(new { error = error.Message }) { StatusCode = statusCode };
     }
 }
