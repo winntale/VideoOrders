@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Уведомления";
+}
+<section>
+    <div class="page-header">
+        <h1>Уведомления</h1>
+        <button id="mark-read" type="button" class="secondary">Отметить все прочитанными</button>
+    </div>
+
+    <table class="orders-table notifications-table">
+        <thead>
+        <tr>
+            <th>Время (МСК)</th>
+            <th>Тип</th>
+            <th>Камера</th>
+            <th>Сообщение</th>
+            <th>Заказ</th>
+        </tr>
+        </thead>
+        <tbody id="notifications-body">
+        <tr><td colspan="5" class="muted">Загрузка…</td></tr>
+        </tbody>
+    </table>
+</section>
+@section Scripts {
+    <script src="~/js/notifications-index.js" asp-append-version="true"></script>
+}
