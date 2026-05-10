@@ -15,6 +15,7 @@ builder.Services.AddHttpClient<ProcessingSystemClient>(c => c.BaseAddress = new 
 builder.Services.AddHttpClient<UserServiceClient>(c => c.BaseAddress = new Uri(backends.UserServiceUrl));
 builder.Services.AddHttpClient<VideoArchiveServiceClient>(c => c.BaseAddress = new Uri(backends.VideoArchiveServiceUrl));
 builder.Services.AddHttpClient<OrderServiceClient>(c => c.BaseAddress = new Uri(backends.OrderServiceUrl));
+builder.Services.AddHttpClient<NotificationServiceClient>(c => c.BaseAddress = new Uri(backends.NotificationServiceUrl));
 
 builder.Services
     .AddAuthentication(PortalSession.CookieScheme)

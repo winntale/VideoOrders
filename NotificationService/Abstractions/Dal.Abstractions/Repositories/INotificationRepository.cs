@@ -6,4 +6,7 @@ public interface INotificationRepository
 {
     Task AddAsync(Notification notification, CancellationToken cancellationToken);
     Task<IReadOnlyList<Notification>> GetByOrderIdAsync(Guid orderId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Notification>> GetByOrderIdsAsync(
+        IReadOnlyCollection<Guid> orderIds,
+        CancellationToken cancellationToken);
 }

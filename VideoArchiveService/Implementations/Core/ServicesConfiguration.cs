@@ -11,6 +11,7 @@ public static class ServicesConfiguration
     public static void ConfigureCoreServices(this IServiceCollection services)
     {
         services.AddScoped<IValidateArchiveAvailabilityOperation, ValidateArchiveAvailabilityOperation>();
+        services.AddScoped<IListCamerasOperation, ListCamerasOperation>();
     }
     
     public static void ConfigureCoreProfiles(this IMapperConfigurationExpression mc)

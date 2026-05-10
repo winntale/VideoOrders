@@ -3,7 +3,13 @@
     const dialog = document.getElementById('player-dialog');
     const player = document.getElementById('player');
 
-    const fmtDate = iso => new Date(iso).toLocaleString();
+    // All listing times are shown in Moscow time (UTC+3).
+    const MSK_FORMATTER = new Intl.DateTimeFormat('ru-RU', {
+        timeZone: 'Europe/Moscow',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+    });
+    const fmtDate = iso => MSK_FORMATTER.format(new Date(iso));
     const fmtSize = bytes => bytes ? (bytes / (1024*1024)).toFixed(1) + ' MB' : '—';
     const statusClass = s => 'status-pill ' + (s || '').toLowerCase();
     const escape = s => (s ?? '').toString().replace(/[&<>"']/g, c => ({
@@ -41,7 +47,7 @@
             ` : (o.status === 'Failed' ? `<span class="muted" title="${escape(o.failureReason || '')}">${escape(o.failureReason || 'Ошибка')}</span>` : '<span class="muted">…</span>');
 
             return `<tr>
-                <td><code>${escape(o.cameraId)}</code></td>
+                <td>${escape(o.cameraName || o.cameraId)}</td>
                 <td>${fmtDate(o.fromUtc)} → ${fmtDate(o.toUtc)}</td>
                 <td><span class="${statusClass(o.status)}">${escape(o.status)}</span></td>
                 <td>${fmtSize(o.archiveFile?.fileSize)}</td>

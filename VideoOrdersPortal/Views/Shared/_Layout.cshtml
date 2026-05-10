@@ -19,6 +19,9 @@
             <nav class="nav">
                 <a asp-controller="Orders" asp-action="New">Новый заказ</a>
                 <a asp-controller="Orders" asp-action="Index">Мои заказы</a>
+                <a asp-controller="Notifications" asp-action="Index">
+                    Уведомления <span id="notif-badge" class="notif-badge" hidden>0</span>
+                </a>
             </nav>
             <form method="post" asp-controller="Account" asp-action="Logout" class="logout-form">
                 <span class="user-id">@login</span>
@@ -30,6 +33,11 @@
 <main class="container">
     @RenderBody()
 </main>
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+@if (isAuthenticated)
+{
+    <script src="~/js/notifications-poller.js" asp-append-version="true"></script>
+}
 @RenderSection("Scripts", required: false)
 </body>
 </html>

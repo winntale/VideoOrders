@@ -21,4 +21,20 @@ internal sealed class NotificationRepository(NotificationDbContext dbContext) : 
             .Find(x => x.OrderId == orderId)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Notification>> GetByOrderIdsAsync(
+        IReadOnlyCollection<Guid> orderIds,
+        CancellationToken cancellationToken)
+    {
+        if (orderIds.Count == 0)
+        {
+            return Array.Empty<Notification>();
+        }
+
+        var filter = Builders<Notification>.Filter.In(x => x.OrderId, orderIds);
+        return await dbContext.Notifications
+            .Find(filter)
+            .SortByDescending(x => x.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+    }
 }

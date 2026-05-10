@@ -3,12 +3,36 @@ using VideoOrdersPortal.Models;
 
 namespace VideoOrdersPortal.Clients;
 
+public sealed record ProcessingCameraFile(Guid Id, string DisplayName, long FileSize);
+
+public sealed record NotificationDto(
+    Guid Id,
+    Guid OrderId,
+    int Type,
+    string Message,
+    DateTimeOffset CreatedAtUtc);
+
+public sealed class NotificationServiceClient(HttpClient http)
+{
+    public async Task<IReadOnlyList<NotificationDto>> ListByOrderIdsAsync(
+        IReadOnlyCollection<Guid> orderIds,
+        CancellationToken ct)
+    {
+        if (orderIds.Count == 0) return Array.Empty<NotificationDto>();
+
+        var query = string.Join("&", orderIds.Select(id => $"orderIds={id:D}"));
+        return await http.GetFromJsonAsync<IReadOnlyList<NotificationDto>>(
+                   $"/Notifications/ByOrders?{query}", ct)
+               ?? Array.Empty<NotificationDto>();
+    }
+}
+
 public sealed class ProcessingSystemClient(HttpClient http)
 {
-    public async Task<IReadOnlyList<CameraDto>> ListCamerasAsync(CancellationToken ct)
+    public async Task<IReadOnlyList<ProcessingCameraFile>> ListCamerasAsync(CancellationToken ct)
     {
-        return await http.GetFromJsonAsync<IReadOnlyList<CameraDto>>("/Cameras", ct)
-               ?? Array.Empty<CameraDto>();
+        return await http.GetFromJsonAsync<IReadOnlyList<ProcessingCameraFile>>("/Cameras", ct)
+               ?? Array.Empty<ProcessingCameraFile>();
     }
 }
 
@@ -60,8 +84,16 @@ public sealed record AuthenticatedUser(Guid UserId, string Login);
 
 public sealed record AuthResult(AuthenticatedUser? User, string? Error);
 
+public sealed record VideoArchiveCameraDto(Guid Id, string Name, bool IsActive);
+
 public sealed class VideoArchiveServiceClient(HttpClient http)
 {
+    public async Task<IReadOnlyList<VideoArchiveCameraDto>> ListCamerasAsync(CancellationToken ct)
+    {
+        return await http.GetFromJsonAsync<IReadOnlyList<VideoArchiveCameraDto>>("/Cameras/List", ct)
+               ?? Array.Empty<VideoArchiveCameraDto>();
+    }
+
     public async Task<ValidationResult> ValidateAvailabilityAsync(
         Guid cameraId,
         DateTimeOffset fromUtc,

@@ -20,8 +20,26 @@ public sealed class OrdersApiController(
         var userId = HttpContext.GetUserId();
         if (userId is null) return Unauthorized();
 
-        var list = await orders.ListByUserAsync(userId.Value, ct);
-        return Ok(list);
+        var ordersTask = orders.ListByUserAsync(userId.Value, ct);
+        var camerasTask = archive.ListCamerasAsync(ct);
+        await Task.WhenAll(ordersTask, camerasTask);
+
+        var nameById = (await camerasTask).ToDictionary(x => x.Id, x => x.Name);
+
+        var enriched = (await ordersTask)
+            .Select(o => new OrderListItemDto(
+                o.Id,
+                o.UserId,
+                o.CameraId,
+                nameById.TryGetValue(o.CameraId, out var name) ? name : o.CameraId.ToString(),
+                o.FromUtc,
+                o.ToUtc,
+                o.Status,
+                o.FailureReason,
+                o.ArchiveFile))
+            .ToList();
+
+        return Ok(enriched);
     }
 
     [HttpPost("validate-access")]
