@@ -6,4 +6,6 @@ namespace Dal.Abstractions.Repositories;
 public interface ICameraRepository
 {
     Task<Camera?> GetByIdAsync(CameraRepositoryModel cameraRepositoryModel, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<Camera>> ListAsync(CancellationToken cancellationToken);
 }

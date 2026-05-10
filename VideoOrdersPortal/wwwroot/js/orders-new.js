@@ -20,9 +20,10 @@
         submitBtn.disabled = !(selectedCamera && accessOk && archiveOk && fromInput.value && toInput.value);
     }
 
+    // Inputs are interpreted as UTC+3 wall-clock; we convert to absolute UTC ISO before sending.
     function toIsoUtc(local) {
         if (!local) return null;
-        return new Date(local + 'Z').toISOString();
+        return new Date(local + '+03:00').toISOString();
     }
 
     async function loadCameras() {
@@ -38,7 +39,7 @@
             for (const cam of cameras) {
                 const li = document.createElement('li');
                 li.dataset.id = cam.id;
-                li.innerHTML = `<span>${cam.displayName}</span><span class="size">${(cam.fileSize / (1024*1024)).toFixed(1)} MB</span>`;
+                li.innerHTML = `<span>${cam.name}</span><span class="size">${(cam.fileSize / (1024*1024)).toFixed(1)} MB</span>`;
                 li.addEventListener('click', () => selectCamera(cam, li));
                 cameraList.appendChild(li);
             }

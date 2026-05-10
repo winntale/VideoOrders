@@ -69,3 +69,60 @@ label { display: block; margin: 8px 0; font-size: 13px; color: #475569; }
 
 dialog { border: 0; border-radius: 10px; padding: 16px; max-width: 80vw; }
 dialog::backdrop { background: rgba(0,0,0,0.6); }
+
+.player-dialog { padding: 0; max-width: 80vw; background: #000; position: relative; }
+.player-dialog video { display: block; width: 100%; max-height: 80vh; }
+.player-close { position: absolute; top: 8px; right: 8px; margin: 0; z-index: 1; }
+.player-close button {
+    background: rgba(0, 0, 0, 0.55); color: #fff; border: 0; border-radius: 999px;
+    width: 32px; height: 32px; padding: 0; line-height: 1; font-size: 22px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+.player-close button:hover { background: rgba(0, 0, 0, 0.8); }
+
+.notif-badge {
+    display: inline-block; min-width: 18px; padding: 0 6px; margin-left: 4px;
+    background: #ef4444; color: #fff; border-radius: 999px;
+    font-size: 11px; font-weight: 700; line-height: 18px; text-align: center;
+}
+
+.toast-container {
+    position: fixed; right: 20px; bottom: 20px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 10px; max-width: 360px;
+    pointer-events: none;
+}
+.toast {
+    pointer-events: auto;
+    background: #fff; color: #1f2330;
+    border-left: 4px solid #2563eb;
+    border-radius: 8px;
+    padding: 12px 36px 12px 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    position: relative;
+    animation: toast-in 0.25s ease-out;
+}
+.toast-leaving { animation: toast-out 0.25s ease-in forwards; }
+.toast-ordercompleted { border-left-color: #16a34a; }
+.toast-orderfailed, .toast-resourcereservationfailed { border-left-color: #dc2626; }
+.toast-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.toast-body { font-size: 13px; word-break: break-word; }
+.toast-meta { font-size: 12px; color: #64748b; margin-top: 4px; }
+.toast-close {
+    position: absolute; top: 4px; right: 4px;
+    background: transparent; color: #94a3b8; border: 0; cursor: pointer;
+    width: 28px; height: 28px; padding: 0; font-size: 20px; line-height: 1;
+}
+.toast-close:hover { color: #1f2330; background: transparent; }
+
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-out {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateX(20px); }
+}
+
+.status-pill.ordercompleted { background: #dcfce7; color: #15803d; }
+.status-pill.orderfailed, .status-pill.resourcereservationfailed { background: #fee2e2; color: #b91c1c; }
+.notifications-table .order-id { cursor: help; }

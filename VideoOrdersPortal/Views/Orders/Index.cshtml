@@ -11,7 +11,7 @@
         <thead>
         <tr>
             <th>Камера</th>
-            <th>Интервал</th>
+            <th>Интервал (МСК, UTC+3)</th>
             <th>Статус</th>
             <th>Размер</th>
             <th>Действия</th>
@@ -22,9 +22,11 @@
         </tbody>
     </table>
 
-    <dialog id="player-dialog">
-        <video id="player" controls preload="metadata" style="width:100%;max-height:70vh"></video>
-        <form method="dialog"><button>Закрыть</button></form>
+    <dialog id="player-dialog" class="player-dialog">
+        <form method="dialog" class="player-close">
+            <button type="submit" aria-label="Закрыть">&times;</button>
+        </form>
+        <video id="player" controls preload="metadata"></video>
     </dialog>
 </section>
 @section Scripts {

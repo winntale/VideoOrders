@@ -15,4 +15,12 @@ internal sealed class CameraRepository(VideoArchiveDbContext dbContext, IMapper 
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == cameraRepositoryModel.CameraId, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Camera>> ListAsync(CancellationToken cancellationToken)
+    {
+        return await dbContext.Cameras
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
 }
