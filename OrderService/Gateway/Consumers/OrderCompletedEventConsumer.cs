@@ -1,4 +1,4 @@
-﻿using Core.Options;
+using Core.Options;
 using Dal.Abstractions.Enums;
 using Dal.Abstractions.Common;
 using Dal.Abstractions.Entities;
@@ -6,14 +6,14 @@ using Dal.Abstractions.Models;
 using Dal.Abstractions.Repositories;
 using Events.Abstractions.Models;
 using MassTransit;
-using Microsoft.Extensions.Options;
 
 namespace Gateway.Consumers;
 
 public sealed class OrderCompletedEventConsumer(
     IOrderRepository orderRepository,
     IArchiveFileRepository archiveFileRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ArchiveStorageOptions storageOptions)
     : IConsumer<OrderCompletedEvent>
 {
     public async Task Consume(ConsumeContext<OrderCompletedEvent> context)
@@ -41,9 +41,14 @@ public sealed class OrderCompletedEventConsumer(
             FailureReason = null
         };
 
-        var fullPath = Path.Combine("../../archive_storage", message.StoredFileName).Replace('\\', '/');
+        // Используем тот же RootPath, что и ArchiveFileStorage при чтении.
+        // Раньше здесь была привязка к "../../archive_storage", из-за
+        // которой StoragePath в БД зависел от текущей рабочей директории
+        // и в Docker-контейнере не находился вовсе.
+        var fullPath = Path.Combine(storageOptions.RootPath, message.StoredFileName)
+            .Replace('\\', '/');
 
-        Directory.CreateDirectory(Path.GetDirectoryName(fullPath) ?? string.Empty);
+        Directory.CreateDirectory(storageOptions.RootPath);
 
         var archiveFile = new ArchiveFile
         {
@@ -59,7 +64,7 @@ public sealed class OrderCompletedEventConsumer(
 
         await orderRepository.UpdateAsync(updatedOrder, context.CancellationToken);
         await archiveFileRepository.AddAsync(archiveFile, context.CancellationToken);
-        
+
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
     }
 }

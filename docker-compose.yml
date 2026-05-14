@@ -1,4 +1,5 @@
 services:
+  # --------------------- Инфраструктура ---------------------
   orders-postgres:
     image: postgres:16
     container_name: orders-postgres
@@ -11,9 +12,14 @@ services:
     volumes:
       - orders_postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - videoorders-net
 
   orders-rabbitmq:
-    image: masstransit/rabbitmq:latest
+    # Шаблон Zabbix "RabbitMQ cluster by HTTP" из 6.4 LTS совместим с
+    # management API RabbitMQ 3.8-3.13. На 4.x некоторые эндпоинты меняют
+    # формат, и discovery падает в "Not supported". Закрепляем 3.13.
+    image: rabbitmq:3.13-management
     container_name: orders-rabbitmq
     hostname: rabbitmq
     environment:
@@ -24,7 +30,13 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+      # Декларативная конфигурация: заведённый пользователь zabbix/zabbix_password
+      # для мониторинга и снятое ограничение loopback_users у guest.
+      - ./zabbix/rabbitmq.conf:/etc/rabbitmq/conf.d/10-zabbix.conf:ro
+      - ./zabbix/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json:ro
     restart: unless-stopped
+    networks:
+      - videoorders-net
 
   notifications-mongo:
     image: mongo:7
@@ -38,6 +50,8 @@ services:
     volumes:
       - notifications_mongo_data:/data/db
     restart: unless-stopped
+    networks:
+      - videoorders-net
 
   audit-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
@@ -51,6 +65,8 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     restart: unless-stopped
+    networks:
+      - videoorders-net
 
   audit-kibana:
     image: docker.elastic.co/kibana/kibana:8.13.4
@@ -62,11 +78,150 @@ services:
     depends_on:
       - audit-elasticsearch
     restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  # --------------------- Микросервисы ---------------------
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet-service
+      args:
+        PROJECT_PATH: UserService/Gateway
+    container_name: user-service
+    environment:
+      ConnectionStrings__Users: "Host=orders-postgres;Port=5432;Database=orders_db;Username=orders_user;Password=orders_password"
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5189:8080"
+    depends_on:
+      - orders-postgres
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  video-archive-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet-service
+      args:
+        PROJECT_PATH: VideoArchiveService/Gateway
+    container_name: video-archive-service
+    environment:
+      ConnectionStrings__VideoArchives: "Host=orders-postgres;Port=5432;Database=orders_db;Username=orders_user;Password=orders_password"
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5108:8080"
+    depends_on:
+      - orders-postgres
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  order-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet-service
+      args:
+        PROJECT_PATH: OrderService/Gateway
+    container_name: order-service
+    environment:
+      ConnectionStrings__Orders: "Host=orders-postgres;Port=5432;Database=orders_db;Username=orders_user;Password=orders_password"
+      RabbitMq__Host: orders-rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Services__UserService__BaseUrl: "http://user-service:8080/"
+      Services__VideoArchiveService__BaseUrl: "http://video-archive-service:8080/"
+      ArchiveStorage__RootPath: /app/storage/archive-results
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5063:8080"
+    volumes:
+      # Тот же том, что и у processing-system: order-service отдаёт по
+      # /Orders/{id}/download уже готовые файлы, созданные processing-system.
+      - ./archive_storage:/app/storage/archive-results
+    depends_on:
+      - orders-postgres
+      - orders-rabbitmq
+      - user-service
+      - video-archive-service
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet-service
+      args:
+        PROJECT_PATH: NotificationService/Gateway
+    container_name: notification-service
+    environment:
+      RabbitMq__Host: orders-rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Mongo__ConnectionString: "mongodb://notifications_user:notifications_password@notifications-mongo:27017/?authSource=admin"
+      Mongo__DatabaseName: notifications_db
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5230:8080"
+    depends_on:
+      - notifications-mongo
+      - orders-rabbitmq
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  audit-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet-service
+      args:
+        PROJECT_PATH: AuditService/Gateway
+    container_name: audit-service
+    environment:
+      RabbitMq__Host: orders-rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Elasticsearch__Url: "http://audit-elasticsearch:9200"
+      Elasticsearch__IndexName: "audit-entries-v3"
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5290:8080"
+    depends_on:
+      - audit-elasticsearch
+      - orders-rabbitmq
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  resource-management-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet-service
+      args:
+        PROJECT_PATH: ResourceManagementService/Gateway
+    container_name: resource-management-service
+    environment:
+      ConnectionStrings__Resources: "Host=orders-postgres;Port=5432;Database=orders_db;Username=orders_user;Password=orders_password"
+      RabbitMq__Host: orders-rabbitmq
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5277:8080"
+    depends_on:
+      - orders-postgres
+      - orders-rabbitmq
+    restart: unless-stopped
+    networks:
+      - videoorders-net
 
   processing-system:
     environment:
       - ArchiveStorage__RootPath=/app/storage/archive-results
       - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Host=orders-rabbitmq
     build:
       context: .
       dockerfile: ProcessingSystem/Dockerfile
@@ -81,6 +236,193 @@ services:
     depends_on:
       - orders-rabbitmq
     restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  videoorders-portal:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet-service
+      args:
+        PROJECT_PATH: VideoOrdersPortal
+        PROJECT_NAME: VideoOrdersPortal
+    container_name: videoorders-portal
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Backends__OrderServiceUrl: "http://order-service:8080"
+      Backends__UserServiceUrl: "http://user-service:8080"
+      Backends__VideoArchiveServiceUrl: "http://video-archive-service:8080"
+      Backends__ProcessingSystemUrl: "http://processing-system:8080"
+      Backends__NotificationServiceUrl: "http://notification-service:8080"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - order-service
+      - user-service
+      - video-archive-service
+      - notification-service
+      - processing-system
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  # --------------------- Zabbix-мониторинг ---------------------
+  zabbix-postgres:
+    image: postgres:16
+    container_name: zabbix-postgres
+    environment:
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix_password
+      POSTGRES_DB: zabbix
+    volumes:
+      - zabbix_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:alpine-6.4-latest
+    container_name: zabbix-server
+    environment:
+      DB_SERVER_HOST: zabbix-postgres
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix_password
+      POSTGRES_DB: zabbix
+    ports:
+      - "10051:10051"
+    depends_on:
+      - zabbix-postgres
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-pgsql:alpine-6.4-latest
+    container_name: zabbix-web
+    environment:
+      DB_SERVER_HOST: zabbix-postgres
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix_password
+      POSTGRES_DB: zabbix
+      ZBX_SERVER_HOST: zabbix-server
+      PHP_TZ: Europe/Moscow
+    ports:
+      - "8080:8080"
+    depends_on:
+      - zabbix-server
+      - zabbix-postgres
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  # Лёгкие Zabbix-агенты, по одному на каждый микросервис.
+  # Каждый агент пробрасывает HTTP /health соответствующего сервиса
+  # и метрики хост-машины контейнера в zabbix-server.
+  zabbix-agent-user:
+    image: zabbix/zabbix-agent2:alpine-6.4-latest
+    container_name: zabbix-agent-user
+    environment:
+      ZBX_HOSTNAME: user-service
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - ./zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.d/videoorders.conf:ro
+    depends_on:
+      - user-service
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-agent-order:
+    image: zabbix/zabbix-agent2:alpine-6.4-latest
+    container_name: zabbix-agent-order
+    environment:
+      ZBX_HOSTNAME: order-service
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - ./zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.d/videoorders.conf:ro
+    depends_on:
+      - order-service
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-agent-notification:
+    image: zabbix/zabbix-agent2:alpine-6.4-latest
+    container_name: zabbix-agent-notification
+    environment:
+      ZBX_HOSTNAME: notification-service
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - ./zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.d/videoorders.conf:ro
+    depends_on:
+      - notification-service
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-agent-audit:
+    image: zabbix/zabbix-agent2:alpine-6.4-latest
+    container_name: zabbix-agent-audit
+    environment:
+      ZBX_HOSTNAME: audit-service
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - ./zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.d/videoorders.conf:ro
+    depends_on:
+      - audit-service
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-agent-video-archive:
+    image: zabbix/zabbix-agent2:alpine-6.4-latest
+    container_name: zabbix-agent-video-archive
+    environment:
+      ZBX_HOSTNAME: video-archive-service
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - ./zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.d/videoorders.conf:ro
+    depends_on:
+      - video-archive-service
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-agent-resource-management:
+    image: zabbix/zabbix-agent2:alpine-6.4-latest
+    container_name: zabbix-agent-resource-management
+    environment:
+      ZBX_HOSTNAME: resource-management-service
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - ./zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.d/videoorders.conf:ro
+    depends_on:
+      - resource-management-service
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+  zabbix-agent-processing:
+    image: zabbix/zabbix-agent2:alpine-6.4-latest
+    container_name: zabbix-agent-processing
+    environment:
+      ZBX_HOSTNAME: processing-system
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - ./zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.d/videoorders.conf:ro
+      # Тот же volume, что у processing-system/order-service — нужен агенту
+      # чтобы корректно считать vfs.fs.size[/app/storage/archive-results,...]
+      # и алертить о заканчивающемся месте под архивы.
+      - ./archive_storage:/app/storage/archive-results:ro
+    depends_on:
+      - processing-system
+    restart: unless-stopped
+    networks:
+      - videoorders-net
+
+networks:
+  videoorders-net:
+    driver: bridge
 
 volumes:
   orders_postgres_data:
@@ -88,3 +430,4 @@ volumes:
   notifications_mongo_data:
   elasticsearch_data:
   archive_storage:
+  zabbix_postgres_data:

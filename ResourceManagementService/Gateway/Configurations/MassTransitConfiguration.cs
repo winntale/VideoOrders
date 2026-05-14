@@ -12,6 +12,8 @@ public static class MassTransitConfiguration
             x.SetKebabCaseEndpointNameFormatter();
             
             x.AddConsumer<OrderCreatedConsumer>();
+            x.AddConsumer<OrderCompletedConsumer>();
+            x.AddConsumer<OrderFailedConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {

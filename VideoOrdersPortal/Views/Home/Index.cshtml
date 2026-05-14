@@ -1,0 +1,76 @@
+﻿@page
+@model VideoOrdersPortal.VIews.Home.IndexModel
+@{
+    ViewData["Title"] = "Video Orders";
+}
+
+<div class="container mt-5">
+    <h1>Создать заказ на архив</h1>
+    <form method="post" id="createForm">
+        <div class="row">
+            <div class="col-md-4">
+                <label asp-for="Input.CameraId" class="form-label">Camera ID</label>
+                <input asp-for="Input.CameraId" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Input.EventTime" class="form-label">Время события</label>
+                <input asp-for="Input.EventTime" type="datetime-local" class="form-control" required />
+            </div>
+            <div class="col-md-2">
+                <label asp-for="Input.OffsetMinutes" class="form-label">Отступы (мин)</label>
+                <input asp-for="Input.OffsetMinutes" type="number" class="form-control" value="30" />
+            </div>
+            <div class="col-md-2 mt-4">
+                <button type="submit" class="btn btn-primary w-100">Создать</button>
+            </div>
+        </div>
+    </form>
+
+    <hr class="my-5" />
+
+    <h2>Мои заказы</h2>
+    @if (Model.Orders.Any())
+    {
+        <div class="row">
+            @foreach (var order in Model.Orders)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Заказ @order.Id</h5>
+                            <p class="card-text">
+                                <span class="badge @(order.Status == "Completed" ? "bg-success" : "bg-warning")">@order.Status</span>
+                                <br />Создан: @order.CreatedAtUtc.ToString("dd.MM HH:mm")
+                            </p>
+                            @if (order.Status == "Completed")
+                            {
+                                <a href="/Orders/@order.Id/download" class="btn btn-success">Скачать MP4</a>
+                                <a href="/Orders/@order.Id/stream" class="btn btn-info">Стрим</a>
+                            }
+                            <button class="btn btn-sm btn-outline-secondary refresh-btn" data-order="@order.Id">Обновить</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<script>
+document.getElementById('createForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true; btn.textContent = 'Создаём...';
+    
+    const formData = new FormData(e.target);
+    const response = await fetch('/Orders/Create', {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData)), // или axios
+        headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (response.ok) location.reload();
+    else alert('Ошибка создания');
+    btn.disabled = false; btn.textContent = 'Создать';
+});
+</script>

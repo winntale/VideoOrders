@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Dal.Abstractions\Dal.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -44,6 +44,8 @@ public sealed record OrderDto(
     DateTimeOffset ToUtc,
     string Status,
     string? FailureReason,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset UpdatedAtUtc,
     ArchiveFileDto? ArchiveFile);
 
 public sealed record CreateOrderRequest(

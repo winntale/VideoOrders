@@ -65,16 +65,21 @@ public sealed class OrdersApiController(
         var userId = HttpContext.GetUserId();
         if (userId is null) return Unauthorized();
 
-        var (response, order) = await orders.CreateAsync(
+        var result = await orders.CreateAsync(
             userId.Value, request.CameraId, request.FromUtc, request.ToUtc, ct);
 
-        if (!response.IsSuccessStatusCode)
+        if (!result.transportOk)
         {
-            var body = await response.Content.ReadAsStringAsync(ct);
-            return StatusCode((int)response.StatusCode, new { error = body });
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = result.error });
         }
 
-        return Ok(order);
+        if (!result.response!.IsSuccessStatusCode)
+        {
+            var body = await result.response.Content.ReadAsStringAsync(ct);
+            return StatusCode((int)result.response.StatusCode, new { error = body });
+        }
+
+        return Ok(result.order);
     }
 
     [HttpGet("{orderId:guid}/download")]
@@ -94,7 +99,16 @@ public sealed class OrdersApiController(
             request.Headers.TryAddWithoutValidation("Range", range.ToArray());
         }
 
-        var upstream = await orders.Http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+        HttpResponseMessage upstream;
+        try
+        {
+            upstream = await orders.Http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or System.Net.Sockets.SocketException or TaskCanceledException)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable,
+                new { error = "Сервис заказов сейчас недоступен." });
+        }
 
         Response.StatusCode = (int)upstream.StatusCode;
 

@@ -9,7 +9,8 @@
     <ItemGroup>
       <Folder Include="Clients\" />
       <Folder Include="Controllers\" />
-      <Folder Include="VIews\Shared\" />
+      <Folder Include="Views\Home\" />
+      <Folder Include="Views\Shared\" />
     </ItemGroup>
 
     <ItemGroup>
