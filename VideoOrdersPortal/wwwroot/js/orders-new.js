@@ -39,7 +39,7 @@
     async function loadCameras() {
         try {
             const res = await fetch('/api/cameras');
-            if (!res.ok) throw new Error('HTTP ' + res.status);
+            if (!res.ok) throw new Error('Ошибка сети: ' + res.status);
             const cameras = await res.json();
             cameraList.innerHTML = '';
             if (cameras.length === 0) {
@@ -49,8 +49,16 @@
             for (const cam of cameras) {
                 const li = document.createElement('li');
                 li.dataset.id = cam.id;
-                li.innerHTML = `<span>${cam.name}</span><span class="size">${(cam.fileSize / (1024*1024)).toFixed(1)} MB</span>`;
-                li.addEventListener('click', () => selectCamera(cam, li));
+                const sizeMb = (cam.fileSize / (1024 * 1024)).toFixed(1);
+                const inactiveBadge = cam.isActive ? '' : '<span class="badge-inactive">неактивна</span>';
+                li.innerHTML = `<span>${cam.name}${inactiveBadge}</span><span class="size">${sizeMb} MB</span>`;
+                if (cam.isActive) {
+                    li.addEventListener('click', () => selectCamera(cam, li));
+                } else {
+                    li.classList.add('disabled');
+                    li.setAttribute('aria-disabled', 'true');
+                    li.title = 'Камера неактивна';
+                }
                 cameraList.appendChild(li);
             }
         } catch (e) {

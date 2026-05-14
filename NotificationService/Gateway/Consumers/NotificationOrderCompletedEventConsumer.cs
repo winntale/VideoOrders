@@ -18,7 +18,7 @@ public class NotificationOrderCompletedEventConsumer(INotificationRepository rep
             Id = Guid.NewGuid(),
             OrderId = message.OrderId,
             Type = NotificationType.OrderCompleted,
-            Message = $"Order '{message.OrderId}' completed successfully.",
+            Message = $"Заказ '{message.OrderId}' успешно выполнен.",
             CreatedAtUtc = DateTimeOffset.UtcNow
         };
 

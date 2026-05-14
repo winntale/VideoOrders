@@ -12,17 +12,29 @@
     const fmtDate = iso => MSK_FORMATTER.format(new Date(iso));
     const fmtSize = bytes => bytes ? (bytes / (1024*1024)).toFixed(1) + ' MB' : '—';
     const statusClass = s => 'status-pill ' + (s || '').toLowerCase();
+    const STATUS_LABELS = {
+        Created: 'Создан',
+        Pending: 'В ожидании',
+        InProgress: 'В обработке',
+        Processing: 'В обработке',
+        ResourceReserved: 'Ресурсы зарезервированы',
+        ResourceReservationFailed: 'Нет ресурсов',
+        ProcessingStarted: 'В обработке',
+        Completed: 'Готов',
+        Failed: 'Ошибка'
+    };
+    const statusLabel = s => STATUS_LABELS[s] ?? s ?? '';
     const escape = s => (s ?? '').toString().replace(/[&<>"']/g, c => ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
     })[c]);
 
     let polling = null;
-    const PENDING = new Set(['Created','Pending','InProgress','Processing']);
+    const PENDING = new Set(['Created','Pending','InProgress','Processing','ResourceReserved','ProcessingStarted']);
 
     async function load() {
         try {
             const res = await fetch('/api/orders');
-            if (!res.ok) throw new Error('HTTP ' + res.status);
+            if (!res.ok) throw new Error('Ошибка сети: ' + res.status);
             const orders = await res.json();
             render(orders);
             const hasPending = orders.some(o => PENDING.has(o.status));
@@ -49,7 +61,7 @@
             return `<tr>
                 <td>${escape(o.cameraName || o.cameraId)}</td>
                 <td>${fmtDate(o.fromUtc)} → ${fmtDate(o.toUtc)}</td>
-                <td><span class="${statusClass(o.status)}">${escape(o.status)}</span></td>
+                <td><span class="${statusClass(o.status)}">${escape(statusLabel(o.status))}</span></td>
                 <td>${fmtSize(o.archiveFile?.fileSize)}</td>
                 <td>${actions}</td>
             </tr>`;

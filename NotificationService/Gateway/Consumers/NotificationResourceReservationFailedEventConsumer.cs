@@ -18,7 +18,7 @@ public sealed class NotificationResourceReservationFailedEventConsumer(INotifica
             Id = Guid.NewGuid(),
             OrderId = message.OrderId,
             Type = NotificationType.ResourceReservationFailed,
-            Message = $"Order '{message.OrderId}' failed at resource reservation: '{message.Reason}'",
+            Message = $"Заказ '{message.OrderId}' не удалось обработать — не хватило ресурсов: '{message.Reason}'.",
             CreatedAtUtc = DateTimeOffset.UtcNow
         };
 

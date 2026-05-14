@@ -18,4 +18,15 @@ internal sealed class UserCameraAccessRepository(UserDbContext dbContext)
                 x => x.UserId == userId && x.CameraId == cameraId,
                 cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Guid>> GetAccessibleCameraIdsAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.UserCameraAccesses
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Select(x => x.CameraId)
+            .ToListAsync(cancellationToken);
+    }
 }

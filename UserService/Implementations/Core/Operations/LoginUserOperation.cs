@@ -16,12 +16,12 @@ internal sealed class LoginUserOperation(IUserRepository userRepository) : ILogi
 
         if (user is null || !BCrypt.Net.BCrypt.Verify(operationModel.Password, user.PasswordHash))
         {
-            return Error.Validation("Invalid login or password.");
+            return Error.Validation("Неверный логин или пароль.");
         }
 
         if (user.Status != UserStatus.Active)
         {
-            return Error.Forbidden("User is not active.");
+            return Error.Forbidden("Пользователь не активен.");
         }
 
         return new AuthenticatedUserOperationModel

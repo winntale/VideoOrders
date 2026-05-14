@@ -21,7 +21,7 @@ internal sealed class GetOrderByIdOperation(
         var order = await repository.GetByIdAsync(repositoryModel, cancellationToken);
         if (order is null)
         {
-            return Error.NotFound($"Order with id '{repositoryModel.Id}' was not found.");
+            return Error.NotFound($"Заказ с идентификатором '{repositoryModel.Id}' не найден.");
         }
 
         var model = mapper.Map<OrderDetailsOperationModel>(order);

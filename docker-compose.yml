@@ -255,7 +255,7 @@ services:
       Backends__ProcessingSystemUrl: "http://processing-system:8080"
       Backends__NotificationServiceUrl: "http://notification-service:8080"
     ports:
-      - "5000:8080"
+      - "5050:8080"
     depends_on:
       - order-service
       - user-service

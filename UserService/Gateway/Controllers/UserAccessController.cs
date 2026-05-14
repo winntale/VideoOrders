@@ -1,6 +1,7 @@
 using AutoMapper;
 using Core.Abstractions.OperationModels;
 using Core.Abstractions.Operations;
+using Dal.Abstractions.Repositories;
 using Gateway.Extensions;
 using Gateway.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -30,5 +31,15 @@ public sealed class UserAccessController(
 
         var response = mapper.Map<UserAccessValidationResponseDto>(result.Value);
         return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<Guid>>> CamerasAsync(
+        [FromServices] IUserCameraAccessRepository accessRepository,
+        [FromQuery] Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var cameraIds = await accessRepository.GetAccessibleCameraIdsAsync(userId, cancellationToken);
+        return Ok(cameraIds);
     }
 }

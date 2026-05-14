@@ -1,7 +1,7 @@
 ﻿@page
 @model VideoOrdersPortal.VIews.Home.IndexModel
 @{
-    ViewData["Title"] = "Video Orders";
+    ViewData["Title"] = "Видеозаказы";
 }
 
 <div class="container mt-5">
@@ -9,7 +9,7 @@
     <form method="post" id="createForm">
         <div class="row">
             <div class="col-md-4">
-                <label asp-for="Input.CameraId" class="form-label">Camera ID</label>
+                <label asp-for="Input.CameraId" class="form-label">ID камеры</label>
                 <input asp-for="Input.CameraId" class="form-control" required />
             </div>
             <div class="col-md-4">

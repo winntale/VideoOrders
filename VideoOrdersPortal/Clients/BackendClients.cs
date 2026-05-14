@@ -75,7 +75,7 @@ public sealed class UserServiceClient(HttpClient http, ILogger<UserServiceClient
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ValidationResult(false, $"Access check failed: {(int)response.StatusCode}");
+                return new ValidationResult(false, $"Ошибка проверки доступа: {(int)response.StatusCode}");
             }
 
             var body = await response.Content.ReadFromJsonAsync<UserAccessResponse>(cancellationToken: ct);
@@ -85,6 +85,21 @@ public sealed class UserServiceClient(HttpClient http, ILogger<UserServiceClient
         {
             logger.LogWarning(ex, "UserService недоступен ({BaseAddress}).", http.BaseAddress);
             return new ValidationResult(false, Unreachable);
+        }
+    }
+
+    public async Task<IReadOnlyList<Guid>> GetAccessibleCameraIdsAsync(Guid userId, CancellationToken ct)
+    {
+        try
+        {
+            return await http.GetFromJsonAsync<IReadOnlyList<Guid>>(
+                       $"/UserAccess/Cameras?userId={userId:D}", ct)
+                   ?? Array.Empty<Guid>();
+        }
+        catch (Exception ex) when (BackendCallGuard.IsTransport(ex))
+        {
+            logger.LogWarning(ex, "UserService недоступен ({BaseAddress}).", http.BaseAddress);
+            return Array.Empty<Guid>();
         }
     }
 
@@ -104,12 +119,12 @@ public sealed class UserServiceClient(HttpClient http, ILogger<UserServiceClient
             {
                 var body = await response.Content.ReadFromJsonAsync<AuthenticatedUser>(cancellationToken: ct);
                 return body is null
-                    ? new AuthResult(null, "Empty response from auth service.")
+                    ? new AuthResult(null, "Пустой ответ от сервиса аутентификации.")
                     : new AuthResult(body, null);
             }
 
             var errorBody = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: ct);
-            return new AuthResult(null, errorBody?.Error ?? $"Auth failed: {(int)response.StatusCode}");
+            return new AuthResult(null, errorBody?.Error ?? $"Ошибка аутентификации: {(int)response.StatusCode}");
         }
         catch (Exception ex) when (BackendCallGuard.IsTransport(ex))
         {
@@ -164,7 +179,7 @@ public sealed class VideoArchiveServiceClient(HttpClient http, ILogger<VideoArch
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ValidationResult(false, $"Availability check failed: {(int)response.StatusCode}");
+                return new ValidationResult(false, $"Ошибка проверки доступности архива: {(int)response.StatusCode}");
             }
 
             var body = await response.Content.ReadFromJsonAsync<ArchiveAvailabilityResponse>(cancellationToken: ct);

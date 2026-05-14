@@ -6,6 +6,7 @@ public sealed record CameraDto(
     Guid Id,
     string Name,
     long FileSize,
+    bool IsActive,
     IReadOnlyList<SegmentRange> Segments);
 
 public sealed record UserNotificationDto(

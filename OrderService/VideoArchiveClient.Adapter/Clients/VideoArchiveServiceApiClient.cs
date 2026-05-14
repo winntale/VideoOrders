@@ -31,7 +31,7 @@ internal sealed class VideoArchiveServiceApiClient(
             return new ValidateArchiveAvailabilityResultClientModel
             {
                 IsAvailable = false,
-                DenyReason = $"Camera '{clientModel.CameraId}' was not found."
+                DenyReason = $"Камера '{clientModel.CameraId}' не найдена."
             };
         }
 
@@ -40,7 +40,7 @@ internal sealed class VideoArchiveServiceApiClient(
             return new ValidateArchiveAvailabilityResultClientModel
             {
                 IsAvailable = false,
-                DenyReason = $"VideoArchiveService returned status code '{(int)response.StatusCode}'"
+                DenyReason = $"Сервис видеоархива вернул код состояния '{(int)response.StatusCode}'."
             };
         }
 

@@ -6,4 +6,8 @@ public interface IUserCameraAccessRepository
         Guid userId,
         Guid cameraId,
         CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<Guid>> GetAccessibleCameraIdsAsync(
+        Guid userId,
+        CancellationToken cancellationToken);
 }

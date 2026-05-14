@@ -26,7 +26,7 @@ internal sealed class ValidateArchiveAvailabilityOperation(
         if (camera is null)
         {
             return Error.NotFound(
-                $"Camera with id '{operationModel.CameraId}' was not found.");
+                $"Камера с идентификатором '{operationModel.CameraId}' не найдена.");
         }
 
         if (!camera.IsActive)
@@ -34,7 +34,7 @@ internal sealed class ValidateArchiveAvailabilityOperation(
             return new ArchiveAvailabilityResultOperationModel
             {
                 IsAvailable = false,
-                DenyReason = "Camera is inactive."
+                DenyReason = "Камера неактивна."
             };
         }
 
@@ -49,7 +49,7 @@ internal sealed class ValidateArchiveAvailabilityOperation(
             IsAvailable = coveringSegment is not null,
             DenyReason = coveringSegment is not null
                 ? null
-                : "Archive for the specified time interval is unavailable.",
+                : "Архив за указанный интервал недоступен.",
             SegmentStartUtc = coveringSegment?.FromUtc
         };
 

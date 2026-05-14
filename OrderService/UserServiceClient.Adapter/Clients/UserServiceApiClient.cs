@@ -28,7 +28,7 @@ internal sealed class UserServiceApiClient(
     
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            return Error.NotFound($"User with id '{model.UserId}' was not found.");
+            return Error.NotFound($"Пользователь с идентификатором '{model.UserId}' не найден.");
         }
 
         if (!response.IsSuccessStatusCode)
@@ -36,7 +36,7 @@ internal sealed class UserServiceApiClient(
             return new ValidateAccessResultClientModel
             {
                 IsAllowed = false,
-                DenyReason = $"UserService returned status code {(int)response.StatusCode}."
+                DenyReason = $"Сервис пользователей вернул код состояния {(int)response.StatusCode}."
             };
         }
 

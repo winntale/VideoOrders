@@ -22,7 +22,7 @@ internal sealed class ValidateUserAccessOperation(
         if (user is null)
         {
             return Error.NotFound(
-                $"User with id '{operationModel.UserId}' was not found.");
+                $"Пользователь с идентификатором '{operationModel.UserId}' не найден.");
         }
 
         if (user.Status != UserStatus.Active)
@@ -30,7 +30,7 @@ internal sealed class ValidateUserAccessOperation(
             return new UserAccessValidationResultOperationModel
             {
                 IsAllowed = false,
-                DenyReason = "User is not active."
+                DenyReason = "Пользователь не активен."
             };
         }
 
@@ -42,7 +42,7 @@ internal sealed class ValidateUserAccessOperation(
         var resultModel = new UserAccessValidationResultOperationModel
         {
             IsAllowed = hasAccess,
-            DenyReason = hasAccess ? null : "User has no access to this camera."
+            DenyReason = hasAccess ? null : "У пользователя нет доступа к этой камере."
         };
 
         return resultModel;

@@ -18,12 +18,12 @@ internal sealed class ArchiveFileAccessService(
 
         if (archiveFile is null)
         {
-            return Error.NotFound($"Archive file for order '{orderId}' was not found.");
+            return Error.NotFound($"Файл архива для заказа '{orderId}' не найден.");
         }
 
         if (!archiveFileStorage.Exists(archiveFile.StoragePath))
         {
-            return Error.NotFound($"Physical archive file for order '{orderId}' is missing.");
+            return Error.NotFound($"Физический файл архива для заказа '{orderId}' отсутствует.");
         }
 
         var stream = archiveFileStorage.OpenRead(archiveFile.StoragePath);

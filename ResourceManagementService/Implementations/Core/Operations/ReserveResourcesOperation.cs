@@ -38,7 +38,7 @@ internal sealed class ReserveResourcesOperation(
                     Success = false,
                     Estimates = estimates,
                     EstimatedProcessingDuration = bundle.EstimatedProcessingDuration,
-                    FailureReason = $"Resource {estimate.Type} is not registered.",
+                    FailureReason = $"Ресурс {estimate.Type} не зарегистрирован.",
                 };
             }
 
@@ -49,7 +49,7 @@ internal sealed class ReserveResourcesOperation(
                     Success = false,
                     Estimates = estimates,
                     EstimatedProcessingDuration = bundle.EstimatedProcessingDuration,
-                    FailureReason = $"Insufficient {estimate.Type}: requested {estimate.Amount} {estimate.Unit}, available {res.TotalCapacity - res.ReservedAmount} {res.Unit}.",
+                    FailureReason = $"Недостаточно ресурса {estimate.Type}: запрошено {estimate.Amount} {estimate.Unit}, доступно {res.TotalCapacity - res.ReservedAmount} {res.Unit}.",
                 };
             }
         }

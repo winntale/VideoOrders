@@ -18,7 +18,7 @@ public sealed class NotificationOrderFailedEventConsumer(INotificationRepository
             Id = Guid.NewGuid(),
             OrderId = message.OrderId,
             Type = NotificationType.OrderFailed,
-            Message = $"Order '{message.OrderId}' failed: '{message.Reason}'",
+            Message = $"Заказ '{message.OrderId}' завершился ошибкой: '{message.Reason}'.",
             CreatedAtUtc = DateTimeOffset.UtcNow
         };
 

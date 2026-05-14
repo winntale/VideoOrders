@@ -21,18 +21,18 @@ internal sealed class RegisterUserOperation(
 
         if (login.Length < 3)
         {
-            return Error.Validation("Login must be at least 3 characters.");
+            return Error.Validation("Логин должен содержать минимум 3 символа.");
         }
 
         if (operationModel.Password.Length < 6)
         {
-            return Error.Validation("Password must be at least 6 characters.");
+            return Error.Validation("Пароль должен содержать минимум 6 символов.");
         }
 
         var existing = await userRepository.GetByLoginAsync(login, cancellationToken);
         if (existing is not null)
         {
-            return Error.Conflict($"User with login '{login}' already exists.");
+            return Error.Conflict($"Пользователь с логином '{login}' уже существует.");
         }
 
         var user = new User
