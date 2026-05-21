@@ -15,4 +15,8 @@
       <PackageReference Include="AutoMapper" Version="16.1.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="VideoArchiveService.UnitTests" />
+    </ItemGroup>
+
 </Project>

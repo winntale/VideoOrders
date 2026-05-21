@@ -16,4 +16,8 @@
       <PackageReference Include="AutoMapper" Version="16.1.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="ResourceManagementService.UnitTests" />
+    </ItemGroup>
+
 </Project>
